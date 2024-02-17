@@ -1,4 +1,5 @@
 // hook.rs
+
 use windows::Win32::{Foundation::*, UI::WindowsAndMessaging::*};
 
 // Install hook
@@ -34,7 +35,9 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
         match w_param.0 as u32 {
             WM_KEYDOWN => {
                 let key_info: *const KBDLLHOOKSTRUCT = std::mem::transmute(l_param);
-                println!("Key \'{}\' was pressed.", (*key_info).vkCode)
+                println!("Key \'{}\' was pressed.", (*key_info).vkCode);
+                // Uncomment the following line to cath the keyboard event
+                // return LRESULT(1);
             }
             _ => (),
         }
