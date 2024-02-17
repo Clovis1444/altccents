@@ -1,8 +1,10 @@
+mod hook;
+mod window;
+
 use windows::{
     core::*, Win32::Foundation::*, Win32::Graphics::Gdi::*, Win32::System::LibraryLoader::*,
     Win32::UI::WindowsAndMessaging::*,
 };
-
 fn main() -> Result<()> {
     unsafe {
         // Module handle. In this case - our binary handle
@@ -42,6 +44,8 @@ fn main() -> Result<()> {
             None,
         );
 
+        let hhk = hook::setup_hook();
+
         // Message buffer
         let mut message = MSG::default();
 
@@ -51,6 +55,7 @@ fn main() -> Result<()> {
             DispatchMessageW(&message);
         }
 
+        hook::remove_hook(hhk);
         Ok(())
     }
 }
@@ -69,11 +74,11 @@ extern "system" fn wndproc(window: HWND, message: u32, wparam: WPARAM, lparam: L
                 PostQuitMessage(0);
                 LRESULT(0)
             }
-            WM_KEYDOWN => {
-                let key = wparam;
-                println!("WM_KEYDOWN: {:?}", key);
-                LRESULT(0)
-            }
+            // WM_KEYDOWN => {
+            //     let key = wparam;
+            //     println!("WM_KEYDOWN: {:?}", key);
+            //     LRESULT(0)
+            // }
             _ => DefWindowProcW(window, message, wparam, lparam),
         }
     }
