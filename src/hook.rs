@@ -1,6 +1,14 @@
 // hook.rs
 
-use windows::Win32::{Foundation::*, UI::WindowsAndMessaging::*};
+use crate::accent;
+
+use windows::Win32::{
+    Foundation::*,
+    UI::{
+        Input::KeyboardAndMouse::{VK_BACK, VK_PACKET},
+        WindowsAndMessaging::*,
+    },
+};
 
 // Install hook
 pub fn setup_hook() -> HHOOK {
@@ -35,13 +43,22 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
         match w_param.0 as u32 {
             WM_KEYDOWN => {
                 let key_info: *const KBDLLHOOKSTRUCT = std::mem::transmute(l_param);
+
                 println!("Key \'{}\' was pressed.", (*key_info).vkCode);
-                // Uncomment the following line to cath the keyboard event
+
+                // Print 'ù' on every KEYDOWN except backspace
+                if (*key_info).vkCode != VK_PACKET.0 as u32
+                    && (*key_info).vkCode != VK_BACK.0 as u32
+                {
+                    accent::send_char('ù');
+                }
+                // Uncomment the following line to catch the keyboard event
                 // return LRESULT(1);
             }
             _ => (),
         }
     }
+
     // Call next hook from some other application
     CallNextHookEx(None, code, w_param, l_param)
 }

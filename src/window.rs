@@ -1,8 +1,10 @@
 // window.rs
 
 use windows::{
-    core::*, Win32::Foundation::*, Win32::Graphics::Gdi::*, Win32::System::LibraryLoader::*,
-    Win32::UI::WindowsAndMessaging::*,
+    core::*,
+    Win32::{
+        Foundation::*, Graphics::Gdi::*, System::LibraryLoader::*, UI::WindowsAndMessaging::*,
+    },
 };
 
 pub fn create_window() -> Result<HWND> {
@@ -50,7 +52,12 @@ pub fn create_window() -> Result<HWND> {
 }
 
 // Message handler. Main programm logic
-extern "system" fn wndproc(window: HWND, message: u32, wparam: WPARAM, lparam: LPARAM) -> LRESULT {
+extern "system" fn wndproc(
+    window: HWND,
+    message: u32,
+    w_param: WPARAM,
+    l_param: LPARAM,
+) -> LRESULT {
     unsafe {
         match message {
             WM_PAINT => {
@@ -63,12 +70,18 @@ extern "system" fn wndproc(window: HWND, message: u32, wparam: WPARAM, lparam: L
                 PostQuitMessage(0);
                 LRESULT(0)
             }
-            // WM_KEYDOWN => {
-            //     let key = wparam;
-            //     println!("WM_KEYDOWN: {:?}", key);
-            //     LRESULT(0)
-            // }
-            _ => DefWindowProcW(window, message, wparam, lparam),
+            WM_KEYDOWN => {
+                // let key = wparam;
+                // println!("WM_KEYDOWN: {:?}", key);
+
+                LRESULT(0)
+            }
+            WM_CHAR => {
+                let char = w_param.0 as u8 as char;
+                println!("WM_CHAR: {:?}", char);
+                LRESULT(0)
+            }
+            _ => DefWindowProcW(window, message, w_param, l_param),
         }
     }
 }

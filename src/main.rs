@@ -1,5 +1,6 @@
 // main.rs
 
+mod accent;
 mod hook;
 mod window;
 
@@ -20,6 +21,7 @@ fn main() -> Result<()> {
         // Get messages from OS and dispatch them
         while GetMessageW(&mut message, None, 0, 0).into() {
             DispatchMessageW(&message);
+            TranslateMessage(&message);
         }
 
         hook::remove_hook(hhk);
