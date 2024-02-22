@@ -3,8 +3,8 @@
 use windows::Win32::UI::Input::KeyboardAndMouse::*;
 
 // Main accent data. Order of AccentChar's and AccentKey variants MUST MATCH!
-// Get info: use get_accent()
-const ACCENT_LIST: [AccentChar<'_>; AccentKey::MaxKey as usize] = [
+// Get char: use get_accent()
+const ACCENT_LIST: [AccentChar<'_>; AccentKey::EnumLength as usize] = [
     // 0 = AccentKey::A
     AccentChar {
         lower_case: &['à', 'á', 'â', 'ä', 'æ'],
@@ -47,14 +47,14 @@ const ACCENT_LIST: [AccentChar<'_>; AccentKey::MaxKey as usize] = [
     },
 ];
 
-pub fn get_accent(key: AccentKey, capital: bool, index: usize) -> char {
-    if let AccentKey::MaxKey = key {
+pub fn get_accent(key: AccentKey, is_capital: bool, index: usize) -> char {
+    if let AccentKey::EnumLength = key {
         return '?';
     }
 
     let ch = &ACCENT_LIST[key as usize];
 
-    match capital {
+    match is_capital {
         false => return *ch.lower_case.get(index).unwrap_or(&'?'),
         true => {
             if ch.upper_case.is_empty() {
@@ -71,8 +71,6 @@ struct AccentChar<'a> {
     pub upper_case: &'a [char],
 }
 
-// struct AccentList {}
-
 pub enum AccentKey {
     A,
     E,
@@ -83,7 +81,7 @@ pub enum AccentKey {
     Y,
     Euro,
     // Isert new keys here
-    MaxKey,
+    EnumLength,
 }
 
 impl AccentKey {

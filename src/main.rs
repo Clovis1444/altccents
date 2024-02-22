@@ -3,12 +3,12 @@
 mod accent;
 mod data;
 mod hook;
+#[cfg(test)]
+mod tests;
 mod window;
 
 use windows::{core::*, Win32::UI::WindowsAndMessaging::*};
 fn main() -> Result<()> {
-    println!("{}", data::get_accent(data::AccentKey::E, false, 3));
-
     unsafe {
         let _hwnd = match window::create_window() {
             Err(_) => panic!("Failed to create a window!"),
