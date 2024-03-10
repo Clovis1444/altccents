@@ -1,0 +1,10 @@
+E:\Projects\altccents\target\debug\deps\libwindows_result-3e0cb7dbc9e33a34.rmeta: C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\lib.rs C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\bindings.rs C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\com.rs C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\strings.rs C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\error.rs C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\hresult.rs
+
+E:\Projects\altccents\target\debug\deps\windows_result-3e0cb7dbc9e33a34.d: C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\lib.rs C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\bindings.rs C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\com.rs C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\strings.rs C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\error.rs C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\hresult.rs
+
+C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\lib.rs:
+C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\bindings.rs:
+C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\com.rs:
+C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\strings.rs:
+C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\error.rs:
+C:\Users\Piast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.1.0\src\hresult.rs:
