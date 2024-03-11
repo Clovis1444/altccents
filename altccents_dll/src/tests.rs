@@ -174,3 +174,88 @@ fn data_accent_key_from_msg_test() {
     let result = AccentKey::from_msg(&msg);
     assert_eq!(result, None, "{}", sub_test);
 }
+
+#[test]
+fn data_accent_key_from_vk_test() {
+    use super::data::*;
+    use windows::Win32::UI::Input::KeyboardAndMouse::*;
+
+    let sub_test = "From VIRTUAL_KEY to AccentKey test";
+
+    let result = AccentKey::from_vk(&VK_A);
+    assert_eq!(result, Some(AccentKey::A), "{}", sub_test);
+
+    let result = AccentKey::from_vk(&VK_E);
+    assert_eq!(result, Some(AccentKey::E), "{}", sub_test);
+
+    let result = AccentKey::from_vk(&VK_I);
+    assert_eq!(result, Some(AccentKey::I), "{}", sub_test);
+
+    let result = AccentKey::from_vk(&VK_O);
+    assert_eq!(result, Some(AccentKey::O), "{}", sub_test);
+
+    let result = AccentKey::from_vk(&VK_U);
+    assert_eq!(result, Some(AccentKey::U), "{}", sub_test);
+
+    let result = AccentKey::from_vk(&VK_C);
+    assert_eq!(result, Some(AccentKey::C), "{}", sub_test);
+
+    let result = AccentKey::from_vk(&VK_Y);
+    assert_eq!(result, Some(AccentKey::Y), "{}", sub_test);
+
+    let result = AccentKey::from_vk(&VK_OEM_7);
+    assert_eq!(result, Some(AccentKey::Euro), "{}", sub_test);
+
+    let result = AccentKey::from_vk(&VK_K);
+    assert_eq!(result, None, "{}", sub_test);
+}
+
+// Unit tests for data.rs
+
+#[test]
+fn accent_update_input_state_test() {
+    use crate::accent::*;
+    use crate::data::*;
+    use windows::Win32::UI::Input::KeyboardAndMouse::*;
+
+    let sub_test = "initial value";
+    let result = get_input_state();
+    assert_eq!(result, None, "{}", sub_test);
+
+    let sub_test = "from None to mapped key";
+    update_input_state(&VK_A);
+    let result = get_input_state();
+    assert_eq!(result, Some((AccentKey::A, 0)), "{}", sub_test);
+
+    let sub_test = "from mapped key[0] to mapped key[1]";
+    update_input_state(&VK_A);
+    let result = get_input_state();
+    assert_eq!(result, Some((AccentKey::A, 1)), "{}", sub_test);
+
+    let sub_test = "from mapped key[1] to another mapped key";
+    update_input_state(&VK_O);
+    let result = get_input_state();
+    assert_eq!(result, Some((AccentKey::O, 0)), "{}", sub_test);
+
+    let sub_test = "from mapped key[0] to mapped key[1]";
+    update_input_state(&VK_O);
+    let result = get_input_state();
+    assert_eq!(result, Some((AccentKey::O, 1)), "{}", sub_test);
+
+    let sub_test = "from mapped key[1] to None";
+    update_input_state(&VK_S);
+    let result = get_input_state();
+    assert_eq!(result, None, "{}", sub_test);
+
+    let sub_test = "index overflow test";
+    update_input_state(&VK_E);
+    update_input_state(&VK_E);
+    update_input_state(&VK_E);
+    update_input_state(&VK_E);
+    let result = get_input_state();
+    assert_eq!(result, Some((AccentKey::E, 3)), "{}", sub_test);
+    // Should overflow and set index to [0] after this call
+    update_input_state(&VK_E);
+    let result = get_input_state();
+    assert_eq!(result, Some((AccentKey::E, 0)), "{}", sub_test);
+}

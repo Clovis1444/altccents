@@ -68,12 +68,20 @@ pub fn get_accent(key: AccentKey, is_capital: bool, index: usize) -> char {
     }
 }
 
+pub fn accent_amount(key: &AccentKey) -> Option<usize> {
+    if let AccentKey::EnumLength = key {
+        return None;
+    }
+
+    Some(ACCENT_LIST[*key as usize].lower_case.len())
+}
+
 struct AccentChar<'a> {
     pub lower_case: &'a [char],
     pub upper_case: &'a [char],
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone, Copy)]
 pub enum AccentKey {
     A,
     E,
@@ -118,6 +126,16 @@ impl AccentKey {
 
         for (ak, vk) in AccentKey::MAPPED_KEYS {
             if key == vk.0 {
+                return Some(ak);
+            }
+        }
+
+        None
+    }
+
+    pub fn from_vk(virtual_key: &VIRTUAL_KEY) -> Option<AccentKey> {
+        for (ak, vk) in AccentKey::MAPPED_KEYS {
+            if *virtual_key == vk {
                 return Some(ak);
             }
         }
