@@ -121,3 +121,56 @@ fn data_accent_key_vk_test() {
     let result = AccentKey::EnumLength.vk();
     assert_eq!(result, None, "{}", sub_test);
 }
+
+#[test]
+fn data_accent_key_from_msg_test() {
+    use super::data::*;
+    use windows::Win32::Foundation::WPARAM;
+    use windows::Win32::UI::{
+        Input::KeyboardAndMouse::*,
+        WindowsAndMessaging::{MSG, WM_KEYDOWN},
+    };
+
+    let sub_test = "\"Virtual key\" binding test";
+
+    let mut msg = MSG::default();
+    msg.message = WM_KEYDOWN;
+
+    msg.wParam = WPARAM { 0: VK_A.0 as usize };
+    let result = AccentKey::from_msg(&msg);
+    assert_eq!(result, Some(AccentKey::A), "{}", sub_test);
+
+    msg.wParam = WPARAM { 0: VK_E.0 as usize };
+    let result = AccentKey::from_msg(&msg);
+    assert_eq!(result, Some(AccentKey::E), "{}", sub_test);
+
+    msg.wParam = WPARAM { 0: VK_I.0 as usize };
+    let result = AccentKey::from_msg(&msg);
+    assert_eq!(result, Some(AccentKey::I), "{}", sub_test);
+
+    msg.wParam = WPARAM { 0: VK_O.0 as usize };
+    let result = AccentKey::from_msg(&msg);
+    assert_eq!(result, Some(AccentKey::O), "{}", sub_test);
+
+    msg.wParam = WPARAM { 0: VK_U.0 as usize };
+    let result = AccentKey::from_msg(&msg);
+    assert_eq!(result, Some(AccentKey::U), "{}", sub_test);
+
+    msg.wParam = WPARAM { 0: VK_C.0 as usize };
+    let result = AccentKey::from_msg(&msg);
+    assert_eq!(result, Some(AccentKey::C), "{}", sub_test);
+
+    msg.wParam = WPARAM { 0: VK_Y.0 as usize };
+    let result = AccentKey::from_msg(&msg);
+    assert_eq!(result, Some(AccentKey::Y), "{}", sub_test);
+
+    msg.wParam = WPARAM {
+        0: VK_OEM_7.0 as usize,
+    };
+    let result = AccentKey::from_msg(&msg);
+    assert_eq!(result, Some(AccentKey::Euro), "{}", sub_test);
+
+    msg.wParam = WPARAM { 0: VK_S.0 as usize };
+    let result = AccentKey::from_msg(&msg);
+    assert_eq!(result, None, "{}", sub_test);
+}

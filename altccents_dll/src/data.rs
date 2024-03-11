@@ -1,6 +1,9 @@
 // data.rs
 
-use windows::Win32::UI::Input::KeyboardAndMouse::*;
+use windows::Win32::UI::{
+    Input::KeyboardAndMouse::*,
+    WindowsAndMessaging::{MSG, WM_KEYDOWN},
+};
 
 // Main accent data. Order of AccentChar's and AccentKey variants MUST MATCH!
 const ACCENT_LIST: [AccentChar<'_>; AccentKey::EnumLength as usize] = [
@@ -70,6 +73,7 @@ struct AccentChar<'a> {
     pub upper_case: &'a [char],
 }
 
+#[derive(PartialEq, Debug)]
 pub enum AccentKey {
     A,
     E,
@@ -84,18 +88,40 @@ pub enum AccentKey {
 }
 
 impl AccentKey {
+    const MAPPED_KEYS: [(AccentKey, VIRTUAL_KEY); AccentKey::EnumLength as usize] = [
+        (AccentKey::A, VK_A),
+        (AccentKey::E, VK_E),
+        (AccentKey::I, VK_I),
+        (AccentKey::O, VK_O),
+        (AccentKey::U, VK_U),
+        (AccentKey::C, VK_C),
+        (AccentKey::Y, VK_Y),
+        (AccentKey::Euro, VK_OEM_7),
+    ];
+
     pub fn vk(&self) -> Option<VIRTUAL_KEY> {
-        match self {
-            AccentKey::A => Some(VK_A),
-            AccentKey::E => Some(VK_E),
-            AccentKey::I => Some(VK_I),
-            AccentKey::O => Some(VK_O),
-            AccentKey::U => Some(VK_U),
-            AccentKey::C => Some(VK_C),
-            AccentKey::Y => Some(VK_Y),
-            // " ' " or "Э" key
-            AccentKey::Euro => Some(VK_OEM_7),
-            _ => None,
+        for (ak, vk) in AccentKey::MAPPED_KEYS {
+            if *self == ak {
+                return Some(vk);
+            }
         }
+
+        None
+    }
+
+    pub fn from_msg(msg: &MSG) -> Option<AccentKey> {
+        if msg.message != WM_KEYDOWN {
+            return None;
+        }
+
+        let key = msg.wParam.0 as u16;
+
+        for (ak, vk) in AccentKey::MAPPED_KEYS {
+            if key == vk.0 {
+                return Some(ak);
+            }
+        }
+
+        None
     }
 }

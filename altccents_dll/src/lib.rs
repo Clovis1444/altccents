@@ -16,16 +16,19 @@ pub unsafe extern "system" fn wh_callback(code: i32, w_param: WPARAM, l_param: L
     if code == HC_ACTION.try_into().unwrap() {
         let msg: &MSG = transmute(l_param);
 
-        match msg.message as u32 {
-            WM_KEYDOWN => {
-                println!("Key down: {:?}", msg.wParam);
+        let current_key = match data::AccentKey::from_msg(&msg) {
+            Some(val) => val,
+            None => return CallNextHookEx(None, code, w_param, l_param),
+        };
 
-                if msg.wParam.0 != VK_PACKET.0.into() && msg.wParam.0 != VK_BACK.0.into() {
-                    use data::*;
-                    accent::send_char(get_accent(AccentKey::O, true, 1));
-                }
-            }
-            _ => (),
+        let current_key = current_key
+            .vk()
+            .expect("current_key must be mapped to vk due to previous check");
+
+        if current_key != VK_PACKET && current_key != VK_BACK {
+            // TODO: add more logic here
+            use data::*;
+            accent::send_char(get_accent(AccentKey::O, true, 1));
         }
     }
 
