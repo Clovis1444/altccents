@@ -107,6 +107,7 @@ impl AccentKey {
         (AccentKey::Euro, VK_OEM_7),
     ];
 
+    #[allow(dead_code)]
     pub fn vk(&self) -> Option<VIRTUAL_KEY> {
         for (ak, vk) in AccentKey::MAPPED_KEYS {
             if *self == ak {
@@ -117,6 +118,7 @@ impl AccentKey {
         None
     }
 
+    #[allow(dead_code)]
     pub fn from_msg(msg: &MSG) -> Option<AccentKey> {
         if msg.message != WM_KEYDOWN {
             return None;

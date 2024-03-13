@@ -15,6 +15,7 @@ static mut INPUT_STATE: InputState = InputState {
     capture_wm_char: false,
 };
 
+// DELETE CAPTURER?
 pub fn get_wm_char_capturer_state() -> bool {
     unsafe { INPUT_STATE.capture_wm_char }
 }
@@ -67,6 +68,13 @@ pub fn update_input_state(current_key: &VIRTUAL_KEY) {
     }
 }
 
+pub fn reset_input_state() {
+    unsafe {
+        INPUT_STATE.previous_accent = None;
+        INPUT_STATE.press_count = 0;
+    }
+}
+
 pub fn send_char(ch: char) {
     let pinputs = [
         INPUT {
@@ -97,5 +105,12 @@ pub fn send_char(ch: char) {
 
     unsafe {
         SendInput(&pinputs, 40);
+    }
+}
+
+pub fn send_vk_back() {
+    unsafe {
+        keybd_event(VK_BACK.0.try_into().unwrap(), 0, KEYEVENTF_EXTENDEDKEY, 0);
+        keybd_event(VK_BACK.0.try_into().unwrap(), 0, KEYEVENTF_KEYUP, 0);
     }
 }

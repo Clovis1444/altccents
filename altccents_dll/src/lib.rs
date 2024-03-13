@@ -10,7 +10,7 @@ use std::mem::transmute;
 use windows::Win32::{
     Foundation::*,
     UI::{
-        Input::KeyboardAndMouse::{GetKeyState, VK_CAPITAL},
+        Input::KeyboardAndMouse::{GetKeyState, VIRTUAL_KEY, VK_BACK, VK_CAPITAL, VK_PACKET},
         WindowsAndMessaging::*,
     },
 };
@@ -22,34 +22,29 @@ pub unsafe extern "system" fn wh_callback(code: i32, w_param: WPARAM, l_param: L
 
         // TODO: add repeat check
         match msg.message {
-            WM_KEYDOWN => {
-                let current_key = match data::AccentKey::from_msg(&msg) {
-                    Some(val) => val,
-                    None => return CallNextHookEx(None, code, w_param, l_param),
+            WM_KEYDOWN => 'keydown: {
+                let msg_vk = VIRTUAL_KEY {
+                    0: msg.wParam.0 as u16,
                 };
+                // ignore our input, Caps Lock
+                if msg_vk == VK_PACKET || msg_vk == VK_BACK || msg_vk == VK_CAPITAL {
+                    break 'keydown;
+                }
 
-                let current_key = current_key
-                    .vk()
-                    .expect("current_key must be mapped to vk due to previous check");
+                accent::update_input_state(&msg_vk);
 
-                accent::update_input_state(&current_key);
+                if let None = data::AccentKey::from_vk(&msg_vk) {
+                    break 'keydown;
+                }
+
                 let (key, index) = accent::get_input_state().unwrap();
                 dbg!(key, index);
                 let is_capital = GetKeyState(VK_CAPITAL.0.into()) & 0x0001 != 0;
 
+                accent::send_vk_back();
                 accent::send_char(get_accent(key, is_capital, index));
-                accent::enable_wm_char_capturer();
             }
-            // TODO: catch system WM_CHAR message after accent::send_char was called
-            WM_CHAR => {
-                dbg!(accent::get_wm_char_capturer_state());
-                if accent::get_wm_char_capturer_state() {
-                    accent::disable_wm_char_capturer();
-                    // return LRESULT(1);
-                    // Somehow capture WM_CHAR here
-                    // Use WH_CALLWNDPROC hook?
-                }
-            }
+            // TODO: reset INPUT_STATE on focus change/"control" key press
             _ => (),
         }
     }
