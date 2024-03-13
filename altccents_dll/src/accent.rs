@@ -6,12 +6,30 @@ use windows::Win32::UI::Input::KeyboardAndMouse::*;
 struct InputState {
     previous_accent: Option<AccentKey>,
     press_count: usize,
+    capture_wm_char: bool,
 }
 
 static mut INPUT_STATE: InputState = InputState {
     previous_accent: None,
     press_count: 0,
+    capture_wm_char: false,
 };
+
+pub fn get_wm_char_capturer_state() -> bool {
+    unsafe { INPUT_STATE.capture_wm_char }
+}
+
+pub fn enable_wm_char_capturer() {
+    unsafe {
+        INPUT_STATE.capture_wm_char = true;
+    }
+}
+
+pub fn disable_wm_char_capturer() {
+    unsafe {
+        INPUT_STATE.capture_wm_char = false;
+    }
+}
 
 pub fn get_input_state() -> Option<(AccentKey, usize)> {
     unsafe {
