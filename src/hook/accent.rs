@@ -2,6 +2,61 @@
 
 use windows::Win32::UI::Input::KeyboardAndMouse::*;
 
+use super::data::{self, *};
+
+struct InputState {
+    previous_accent: Option<AccentKey>,
+    press_count: usize,
+}
+
+static mut INPUT_STATE: InputState = InputState {
+    previous_accent: None,
+    press_count: 0,
+};
+
+pub fn get_input_state() -> Option<(AccentKey, usize)> {
+    unsafe {
+        match INPUT_STATE.previous_accent {
+            Some(val) => Some((val, INPUT_STATE.press_count)),
+            None => None,
+        }
+    }
+}
+
+// TODO: Implement reseting state when window was changed
+pub fn update_input_state(current_key: &VIRTUAL_KEY) {
+    let current_accent = match data::AccentKey::from_vk(current_key) {
+        Some(val) => val,
+        None => unsafe {
+            INPUT_STATE.previous_accent = None;
+            INPUT_STATE.press_count = 0;
+            return;
+        },
+    };
+    unsafe {
+        let max = accent_amount(&current_accent)
+            .expect("Accent must exists due to the previous check")
+            - 1;
+
+        if INPUT_STATE.previous_accent != None
+            && INPUT_STATE.previous_accent.unwrap() == current_accent
+            && INPUT_STATE.press_count < max
+        {
+            INPUT_STATE.press_count += 1;
+        } else {
+            INPUT_STATE.previous_accent = Some(current_accent);
+            INPUT_STATE.press_count = 0;
+        }
+    }
+}
+
+pub fn reset_input_state() {
+    unsafe {
+        INPUT_STATE.previous_accent = None;
+        INPUT_STATE.press_count = 0;
+    }
+}
+
 pub fn send_char(ch: char) {
     let pinputs = [
         INPUT {
@@ -32,5 +87,14 @@ pub fn send_char(ch: char) {
 
     unsafe {
         SendInput(&pinputs, 40);
+    }
+}
+
+// Does not needed when using WH_KEYBOARDHOOK_LL
+#[allow(dead_code)]
+pub fn send_vk_back() {
+    unsafe {
+        keybd_event(VK_BACK.0.try_into().unwrap(), 0, KEYEVENTF_EXTENDEDKEY, 0);
+        keybd_event(VK_BACK.0.try_into().unwrap(), 0, KEYEVENTF_KEYUP, 0);
     }
 }

@@ -1,9 +1,11 @@
 // data.rs
 
-use windows::Win32::UI::Input::KeyboardAndMouse::*;
+use windows::Win32::UI::{
+    Input::KeyboardAndMouse::*,
+    WindowsAndMessaging::{MSG, WM_KEYDOWN},
+};
 
 // Main accent data. Order of AccentChar's and AccentKey variants MUST MATCH!
-// Get char: use get_accent()
 const ACCENT_LIST: [AccentChar<'_>; AccentKey::EnumLength as usize] = [
     // 0 = AccentKey::A
     AccentChar {
@@ -66,11 +68,20 @@ pub fn get_accent(key: AccentKey, is_capital: bool, index: usize) -> char {
     }
 }
 
+pub fn accent_amount(key: &AccentKey) -> Option<usize> {
+    if let AccentKey::EnumLength = key {
+        return None;
+    }
+
+    Some(ACCENT_LIST[*key as usize].lower_case.len())
+}
+
 struct AccentChar<'a> {
     pub lower_case: &'a [char],
     pub upper_case: &'a [char],
 }
 
+#[derive(PartialEq, Debug, Clone, Copy)]
 pub enum AccentKey {
     A,
     E,
@@ -85,18 +96,52 @@ pub enum AccentKey {
 }
 
 impl AccentKey {
+    const MAPPED_KEYS: [(AccentKey, VIRTUAL_KEY); AccentKey::EnumLength as usize] = [
+        (AccentKey::A, VK_A),
+        (AccentKey::E, VK_E),
+        (AccentKey::I, VK_I),
+        (AccentKey::O, VK_O),
+        (AccentKey::U, VK_U),
+        (AccentKey::C, VK_C),
+        (AccentKey::Y, VK_Y),
+        (AccentKey::Euro, VK_OEM_7),
+    ];
+
+    #[allow(dead_code)]
     pub fn vk(&self) -> Option<VIRTUAL_KEY> {
-        match self {
-            AccentKey::A => Some(VK_A),
-            AccentKey::E => Some(VK_E),
-            AccentKey::I => Some(VK_I),
-            AccentKey::O => Some(VK_O),
-            AccentKey::U => Some(VK_U),
-            AccentKey::C => Some(VK_C),
-            AccentKey::Y => Some(VK_Y),
-            // " ' " or "Э" key
-            AccentKey::Euro => Some(VK_OEM_7),
-            _ => None,
+        for (ak, vk) in AccentKey::MAPPED_KEYS {
+            if *self == ak {
+                return Some(vk);
+            }
         }
+
+        None
+    }
+
+    #[allow(dead_code)]
+    pub fn from_msg(msg: &MSG) -> Option<AccentKey> {
+        if msg.message != WM_KEYDOWN {
+            return None;
+        }
+
+        let key = msg.wParam.0 as u16;
+
+        for (ak, vk) in AccentKey::MAPPED_KEYS {
+            if key == vk.0 {
+                return Some(ak);
+            }
+        }
+
+        None
+    }
+
+    pub fn from_vk(virtual_key: &VIRTUAL_KEY) -> Option<AccentKey> {
+        for (ak, vk) in AccentKey::MAPPED_KEYS {
+            if *virtual_key == vk {
+                return Some(ak);
+            }
+        }
+
+        None
     }
 }
