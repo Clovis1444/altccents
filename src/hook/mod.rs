@@ -1,6 +1,9 @@
 // hook.rs
 
-use crate::accent;
+mod accent;
+mod data;
+#[cfg(test)]
+mod tests;
 
 use windows::Win32::{
     Foundation::*,
@@ -54,6 +57,11 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                 }
                 // Uncomment the following line to catch the keyboard event
                 // return LRESULT(1);
+            }
+            WM_SYSKEYDOWN => {
+                let key_info: *const KBDLLHOOKSTRUCT = std::mem::transmute(l_param);
+
+                println!("SysKey \'{}\' was pressed.", (*key_info).vkCode);
             }
             _ => (),
         }

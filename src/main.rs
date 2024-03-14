@@ -1,10 +1,6 @@
 // main.rs
 
-mod accent;
-mod data;
 mod hook;
-#[cfg(test)]
-mod tests;
 mod window;
 
 use windows::{core::*, Win32::UI::WindowsAndMessaging::*};
