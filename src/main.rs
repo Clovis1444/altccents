@@ -1,5 +1,6 @@
 // main.rs
 
+mod config;
 mod hook;
 mod window;
 

@@ -5,6 +5,8 @@ mod data;
 #[cfg(test)]
 mod tests;
 
+use super::config::*;
+
 use windows::Win32::{
     Foundation::*,
     UI::{
@@ -55,7 +57,7 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
 
                 // Left control as control key
                 // Note: conflict with defaulth shortcuts such as ctrl + c, ctrl + v etc
-                let control = GetAsyncKeyState(VK_LCONTROL.0.into()) & 0x8000u16 as i16 != 0;
+                let control = GetAsyncKeyState(CONTROL_KEY.0.into()) & 0x8000u16 as i16 != 0;
                 dbg!(control);
 
                 // ignore our input, Caps Lock
@@ -73,12 +75,29 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                 let is_capital = GetKeyState(VK_CAPITAL.0.into()) & 0x0001 != 0;
 
                 // accent::send_vk_back();
-                accent::send_char(data::get_accent(key, is_capital, index));
+                // accent::send_char(data::get_accent(key, is_capital, index));
 
                 return LRESULT(1);
             }
-            WM_SYSKEYDOWN => {
-                // TODO: implement control logic here
+            WM_KEYUP => {
+                let msg_vk = VIRTUAL_KEY {
+                    0: msg.vkCode as u16,
+                };
+
+                if msg_vk == CONTROL_KEY {
+                    println!("Num UP!");
+
+                    match accent::get_input_state() {
+                        Some((key, index)) => {
+                            let is_capital = GetKeyState(VK_CAPITAL.0.into()) & 0x0001 != 0;
+
+                            accent::send_char(data::get_accent(key, is_capital, index));
+                        }
+                        None => (),
+                    }
+
+                    accent::reset_input_state();
+                }
             }
             _ => (),
         }
