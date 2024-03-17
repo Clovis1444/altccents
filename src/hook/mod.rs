@@ -4,15 +4,14 @@ mod accent;
 mod data;
 #[cfg(test)]
 mod tests;
+mod timer;
 
 use super::config::*;
 
 use windows::Win32::{
     Foundation::*,
     UI::{
-        Input::KeyboardAndMouse::{
-            GetAsyncKeyState, GetKeyState, VIRTUAL_KEY, VK_BACK, VK_CAPITAL, VK_LCONTROL, VK_PACKET,
-        },
+        Input::KeyboardAndMouse::{GetKeyState, VIRTUAL_KEY, VK_BACK, VK_CAPITAL, VK_PACKET},
         WindowsAndMessaging::*,
     },
 };
@@ -55,27 +54,38 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                     0: msg.vkCode as u16,
                 };
 
-                // Left control as control key
-                // Note: conflict with defaulth shortcuts such as ctrl + c, ctrl + v etc
-                let control = GetAsyncKeyState(CONTROL_KEY.0.into()) & 0x8000u16 as i16 != 0;
-                dbg!(control);
+                let control = GetKeyState(CONTROL_KEY.0.into()) & 0x8000u16 as i16 != 0;
 
-                // ignore our input, Caps Lock
+                // ignore our CONTROL_KEY, Caps Lock
                 if msg_vk == VK_PACKET || msg_vk == VK_BACK || msg_vk == VK_CAPITAL || !control {
                     break 'keydown;
                 }
 
+                // Send if: current key is not an accent OR current accent != previous accent
+                'send_if_no_accent_or_other_accent: {
+                    let previous_accent = match accent::get_input_state() {
+                        Some((key, _)) => key,
+                        None => break 'send_if_no_accent_or_other_accent,
+                    };
+
+                    match data::AccentKey::from_vk(&msg_vk) {
+                        Some(current_accent) => {
+                            if current_accent == previous_accent {
+                                break 'send_if_no_accent_or_other_accent;
+                            }
+                        }
+                        None => (),
+                    };
+
+                    accent::send_char_and_kill_timer()
+                }
+
                 accent::update_input_state(&msg_vk);
 
+                // If current key is not accent key - send default
                 if let None = data::AccentKey::from_vk(&msg_vk) {
                     break 'keydown;
                 }
-
-                let (key, index) = accent::get_input_state().unwrap();
-                let is_capital = GetKeyState(VK_CAPITAL.0.into()) & 0x0001 != 0;
-
-                // accent::send_vk_back();
-                // accent::send_char(data::get_accent(key, is_capital, index));
 
                 return LRESULT(1);
             }
@@ -87,14 +97,7 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                 if msg_vk == CONTROL_KEY {
                     println!("Num UP!");
 
-                    match accent::get_input_state() {
-                        Some((key, index)) => {
-                            let is_capital = GetKeyState(VK_CAPITAL.0.into()) & 0x0001 != 0;
-
-                            accent::send_char(data::get_accent(key, is_capital, index));
-                        }
-                        None => (),
-                    }
+                    accent::send_char_and_kill_timer();
 
                     accent::reset_input_state();
                 }

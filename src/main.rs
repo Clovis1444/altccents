@@ -5,6 +5,7 @@ mod hook;
 mod window;
 
 use windows::{core::*, Win32::UI::WindowsAndMessaging::*};
+
 fn main() -> Result<()> {
     unsafe {
         let _hwnd = match window::create_window() {

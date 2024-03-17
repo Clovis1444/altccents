@@ -7,6 +7,8 @@ use windows::{
     },
 };
 
+static mut MAIN_WINDOW: HWND = HWND(0);
+
 pub fn create_window() -> Result<HWND> {
     let hwnd: HWND;
     unsafe {
@@ -48,6 +50,11 @@ pub fn create_window() -> Result<HWND> {
         );
     }
 
+    unsafe {
+        if MAIN_WINDOW == HWND(0) {
+            MAIN_WINDOW = hwnd
+        };
+    }
     Ok(hwnd)
 }
 
@@ -73,4 +80,8 @@ extern "system" fn wndproc(
             _ => DefWindowProcW(window, message, w_param, l_param),
         }
     }
+}
+
+pub fn get_main_hwnd() -> HWND {
+    unsafe { MAIN_WINDOW }
 }
