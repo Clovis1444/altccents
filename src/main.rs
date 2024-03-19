@@ -14,8 +14,10 @@ fn main() -> Result<()> {
             Ok(handle) => handle,
         };
 
-        let tray_icon = tray::get_tray_icon_data(hwnd);
+        let mut tray_icon = tray::get_tray_icon_data(hwnd);
         tray::add_tray_icon(&tray_icon);
+        // TODO: create program_state struct
+        tray::update_tray_icon(&mut tray_icon);
 
         let hhk = hook::setup_hook();
 

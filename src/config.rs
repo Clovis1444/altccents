@@ -15,6 +15,8 @@ pub const TRAY_CALLBACK_MESSAGE: u32 = 33333;
 pub const SWITCH_PROGRAM_STATE_BUTTON_ID: u32 = 100;
 pub const QUIT_BUTTON_ID: u32 = 101;
 
+// TODO: load custom icons here
+
 pub fn get_program_status() -> bool {
     unsafe { PROGRAM_STATUS }
 }

@@ -3,7 +3,7 @@
 use super::config::*;
 use std::mem::size_of;
 use windows::{
-    core::{h, PWSTR},
+    core::{h, PCWSTR, PWSTR},
     Win32::{
         Foundation::{HINSTANCE, HWND, POINT},
         UI::{Shell::*, WindowsAndMessaging::*},
@@ -38,7 +38,7 @@ pub fn get_tray_icon_data(hwnd: HWND) -> NOTIFYICONDATAW {
     }
 }
 
-// TODO: implement change_tray_icon()
+// TODO: load custom icons
 pub fn add_tray_icon(icon_data: &NOTIFYICONDATAW) {
     unsafe {
         match Shell_NotifyIconW(NIM_ADD, icon_data).as_bool() {
@@ -57,8 +57,28 @@ pub fn delete_tray_icon(icon_data: &NOTIFYICONDATAW) {
     }
 }
 
+pub fn update_tray_icon(icon_data: &mut NOTIFYICONDATAW) {
+    unsafe {
+        let new_icon: PCWSTR;
+        {
+            if get_program_status() {
+                new_icon = IDI_QUESTION;
+            } else {
+                new_icon = IDI_SHIELD;
+            }
+        }
+
+        icon_data.hIcon = LoadIconW(HINSTANCE { 0: 0 }, new_icon).unwrap();
+        match Shell_NotifyIconW(NIM_MODIFY, icon_data).as_bool() {
+            false => panic!("Failed to modify tray icon"),
+            true => (),
+        };
+    }
+}
+
 // TODO: implement DestroyMenu()
 // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-destroymenu
+// Create global static PROGRAM_STATE struct? Refactor some global variables?
 pub fn context_menu(hwnd: HWND) {
     unsafe {
         let mut cursor_pos: POINT = POINT::default();
