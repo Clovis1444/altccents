@@ -7,6 +7,8 @@ use windows::{
     },
 };
 
+use super::config::TRAY_CALLBACK_MESSAGE;
+
 static mut MAIN_WINDOW: HWND = HWND(0);
 
 pub fn create_window() -> Result<HWND> {
@@ -77,6 +79,15 @@ extern "system" fn wndproc(
             }
             WM_KEYDOWN => LRESULT(0),
             WM_CHAR => LRESULT(0),
+            TRAY_CALLBACK_MESSAGE => {
+                match l_param.0 as u32 {
+                    WM_LBUTTONDOWN => println!("Tray: left mouse click"),
+                    WM_RBUTTONDOWN => println!("Tray: right mouse click"),
+                    _ => (),
+                }
+
+                LRESULT(0)
+            }
             _ => DefWindowProcW(window, message, w_param, l_param),
         }
     }
