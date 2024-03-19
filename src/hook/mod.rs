@@ -45,7 +45,7 @@ pub fn remove_hook(hook: HHOOK) {
 
 // Main hook logic
 unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
-    if code == HC_ACTION.try_into().unwrap() {
+    if code == HC_ACTION.try_into().unwrap() && get_program_status() {
         let msg: &KBDLLHOOKSTRUCT = std::mem::transmute(l_param);
 
         match w_param.0 as u32 {

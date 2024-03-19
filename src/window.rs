@@ -7,7 +7,9 @@ use windows::{
     },
 };
 
-use super::config::TRAY_CALLBACK_MESSAGE;
+use super::{config::*, tray};
+
+use super::config::{get_program_status, switch_program_status, TRAY_CALLBACK_MESSAGE};
 
 static mut MAIN_WINDOW: HWND = HWND(0);
 
@@ -81,11 +83,26 @@ extern "system" fn wndproc(
             WM_CHAR => LRESULT(0),
             TRAY_CALLBACK_MESSAGE => {
                 match l_param.0 as u32 {
-                    WM_LBUTTONDOWN => println!("Tray: left mouse click"),
-                    WM_RBUTTONDOWN => println!("Tray: right mouse click"),
+                    WM_LBUTTONDOWN => {
+                        println!("Tray: Switching program status...");
+                        switch_program_status();
+                        println!("Tray: program status now is {}", get_program_status());
+                    }
+                    WM_RBUTTONDOWN => {
+                        println!("Tray: right mouse click");
+                        tray::context_menu(get_main_hwnd());
+                    }
                     _ => (),
                 }
 
+                LRESULT(0)
+            }
+            WM_COMMAND => {
+                match w_param.0 as u32 {
+                    SWITCH_PROGRAM_STATE_BUTTON_ID => switch_program_status(),
+                    QUIT_BUTTON_ID => PostQuitMessage(0),
+                    _ => (),
+                }
                 LRESULT(0)
             }
             _ => DefWindowProcW(window, message, w_param, l_param),
