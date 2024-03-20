@@ -1,6 +1,6 @@
 // accent.rs
 
-use super::super::{config::*, window::get_main_hwnd};
+use super::super::{config::*, session::PROGRAM_DATA};
 use super::{
     data::{self, *},
     timer::{kill_timer, set_timer},
@@ -26,7 +26,7 @@ pub fn get_input_state() -> Option<(AccentKey, usize)> {
     }
 }
 
-// TODO: Implement reseting state when window was changed
+// TODO: Maybe implement reseting state when window was changed
 pub fn update_input_state(current_key: &VIRTUAL_KEY) {
     unsafe {
         let current_accent = match data::AccentKey::from_vk(current_key) {
@@ -52,7 +52,7 @@ pub fn update_input_state(current_key: &VIRTUAL_KEY) {
         }
 
         // If current key is accent key -> set timer
-        set_timer(get_main_hwnd());
+        set_timer(PROGRAM_DATA.get_hwnd());
     }
 }
 
@@ -101,7 +101,7 @@ pub fn send_char_and_kill_timer() {
     unsafe {
         match get_input_state() {
             Some((key, index)) => {
-                kill_timer(get_main_hwnd(), TIMER_ID);
+                kill_timer(PROGRAM_DATA.get_hwnd(), TIMER_ID);
 
                 let is_capital = GetKeyState(VK_CAPITAL.0.into()) & 0x0001 != 0;
 

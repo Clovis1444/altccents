@@ -7,11 +7,7 @@ use windows::{
     },
 };
 
-use super::{config::*, tray};
-
-use super::config::{get_program_status, switch_program_status, TRAY_CALLBACK_MESSAGE};
-
-static mut MAIN_WINDOW: HWND = HWND(0);
+use super::{config::*, session::PROGRAM_DATA, tray};
 
 pub fn create_window() -> Result<HWND> {
     let hwnd: HWND;
@@ -20,7 +16,7 @@ pub fn create_window() -> Result<HWND> {
         let instance = GetModuleHandleW(None)?;
         debug_assert!(instance.0 != 0);
 
-        let window_class = w!("my window");
+        let window_class = PROGRAM_NAME;
 
         // Window attributes
         let wc = WNDCLASSW {
@@ -41,8 +37,9 @@ pub fn create_window() -> Result<HWND> {
         hwnd = CreateWindowExW(
             WINDOW_EX_STYLE::default(),
             window_class,
-            w!("My window title"),
-            WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+            PROGRAM_NAME,
+            // Set dwstyle flag "WS_VISIBLE" to make window visible
+            WS_OVERLAPPEDWINDOW,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
@@ -54,11 +51,6 @@ pub fn create_window() -> Result<HWND> {
         );
     }
 
-    unsafe {
-        if MAIN_WINDOW == HWND(0) {
-            MAIN_WINDOW = hwnd
-        };
-    }
     Ok(hwnd)
 }
 
@@ -81,25 +73,27 @@ extern "system" fn wndproc(
             }
             WM_KEYDOWN => LRESULT(0),
             WM_CHAR => LRESULT(0),
-            TRAY_CALLBACK_MESSAGE => {
-                match l_param.0 as u32 {
-                    WM_LBUTTONDOWN => {
-                        println!("Tray: Switching program status...");
-                        switch_program_status();
-                        println!("Tray: program status now is {}", get_program_status());
-                    }
-                    WM_RBUTTONDOWN => {
-                        println!("Tray: right mouse click");
-                        tray::context_menu(get_main_hwnd());
-                    }
-                    _ => (),
+            TRAY_CALLBACK_MESSAGE => match l_param.0 as u32 {
+                WM_LBUTTONDOWN => {
+                    println!("Tray: Switching program status...");
+                    PROGRAM_DATA.change_status();
+                    tray::update_tray_icon(&mut PROGRAM_DATA);
+                    println!("Tray: program status now is {}", PROGRAM_DATA.get_status());
+                    LRESULT(0)
                 }
-
-                LRESULT(0)
-            }
+                WM_RBUTTONDOWN => {
+                    println!("Tray: right mouse click");
+                    tray::context_menu(&PROGRAM_DATA);
+                    LRESULT(0)
+                }
+                _ => DefWindowProcW(window, message, w_param, l_param),
+            },
             WM_COMMAND => {
                 match w_param.0 as u32 {
-                    SWITCH_PROGRAM_STATE_BUTTON_ID => switch_program_status(),
+                    SWITCH_PROGRAM_STATE_BUTTON_ID => {
+                        PROGRAM_DATA.change_status();
+                        tray::update_tray_icon(&mut PROGRAM_DATA)
+                    }
                     QUIT_BUTTON_ID => PostQuitMessage(0),
                     _ => (),
                 }
@@ -108,8 +102,4 @@ extern "system" fn wndproc(
             _ => DefWindowProcW(window, message, w_param, l_param),
         }
     }
-}
-
-pub fn get_main_hwnd() -> HWND {
-    unsafe { MAIN_WINDOW }
 }

@@ -1,20 +1,23 @@
 // tray.rs
 
-use super::config::*;
+use super::{
+    config::*,
+    session::{self, PROGRAM_DATA},
+};
 use std::mem::size_of;
 use windows::{
     core::{h, PCWSTR, PWSTR},
     Win32::{
-        Foundation::{HINSTANCE, HWND, POINT},
+        Foundation::{HINSTANCE, LPARAM, POINT, WPARAM},
         UI::{Shell::*, WindowsAndMessaging::*},
     },
 };
 
-pub fn get_tray_icon_data(hwnd: HWND) -> NOTIFYICONDATAW {
+pub fn init_tray_icon_data(program_data: &session::ProgramData) -> NOTIFYICONDATAW {
     unsafe {
         let mut tip_text: [u16; 128] = [0; 128];
         {
-            let tip = "Altccents".to_string();
+            let tip = TRAY_ICON_TIP_TEXT.to_string();
             assert!(tip.len() <= 127, "Tip text can have a maximum of 128 characters, including the terminating null character");
             let tip: Vec<u16> = tip.chars().map(|c| c as u16).collect();
             let mut index: usize = 0;
@@ -24,13 +27,22 @@ pub fn get_tray_icon_data(hwnd: HWND) -> NOTIFYICONDATAW {
             }
         }
 
+        let icon_img: PCWSTR;
+        {
+            if DEFAULT_PROGRAM_STATUS {
+                icon_img = TRAY_ICON_IMG_ON;
+            } else {
+                icon_img = TRAY_ICON_IMG_OFF;
+            }
+        }
+
         let icon_data = NOTIFYICONDATAW {
             cbSize: size_of::<NOTIFYICONDATAW>() as u32,
-            hWnd: hwnd,
+            hWnd: program_data.get_hwnd(),
             uID: TRAY_ICON_ID,
             uFlags: NIF_ICON | NIF_MESSAGE | NIF_TIP,
             uCallbackMessage: TRAY_CALLBACK_MESSAGE,
-            hIcon: LoadIconW(HINSTANCE { 0: 0 }, IDI_QUESTION).unwrap(),
+            hIcon: LoadIconW(HINSTANCE { 0: 0 }, icon_img).unwrap(),
             szTip: tip_text,
             ..Default::default()
         };
@@ -39,47 +51,47 @@ pub fn get_tray_icon_data(hwnd: HWND) -> NOTIFYICONDATAW {
 }
 
 // TODO: load custom icons
-pub fn add_tray_icon(icon_data: &NOTIFYICONDATAW) {
+pub fn add_tray_icon(program_data: &session::ProgramData) {
     unsafe {
-        match Shell_NotifyIconW(NIM_ADD, icon_data).as_bool() {
+        match Shell_NotifyIconW(NIM_ADD, &program_data.get_tray_icon_data()).as_bool() {
             false => panic!("Failed to add tray icon"),
             true => (),
         };
     }
 }
 
-pub fn delete_tray_icon(icon_data: &NOTIFYICONDATAW) {
+pub fn delete_tray_icon(program_data: &session::ProgramData) {
     unsafe {
-        match Shell_NotifyIconW(NIM_DELETE, icon_data).as_bool() {
+        match Shell_NotifyIconW(NIM_DELETE, &program_data.get_tray_icon_data()).as_bool() {
             false => panic!("Failed to delete tray icon"),
             true => (),
         };
     }
 }
 
-pub fn update_tray_icon(icon_data: &mut NOTIFYICONDATAW) {
+pub fn update_tray_icon(program_data: &mut session::ProgramData) {
     unsafe {
         let new_icon: PCWSTR;
         {
-            if get_program_status() {
-                new_icon = IDI_QUESTION;
+            if program_data.get_status() {
+                new_icon = TRAY_ICON_IMG_ON;
             } else {
-                new_icon = IDI_SHIELD;
+                new_icon = TRAY_ICON_IMG_OFF;
             }
         }
 
+        let mut icon_data = program_data.get_tray_icon_data();
         icon_data.hIcon = LoadIconW(HINSTANCE { 0: 0 }, new_icon).unwrap();
-        match Shell_NotifyIconW(NIM_MODIFY, icon_data).as_bool() {
+        program_data.set_tray_icon_data(icon_data);
+
+        match Shell_NotifyIconW(NIM_MODIFY, &icon_data).as_bool() {
             false => panic!("Failed to modify tray icon"),
             true => (),
         };
     }
 }
 
-// TODO: implement DestroyMenu()
-// https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-destroymenu
-// Create global static PROGRAM_STATE struct? Refactor some global variables?
-pub fn context_menu(hwnd: HWND) {
+pub fn context_menu(program_data: &session::ProgramData) {
     unsafe {
         let mut cursor_pos: POINT = POINT::default();
         match GetCursorPos(&mut cursor_pos) {
@@ -95,7 +107,7 @@ pub fn context_menu(hwnd: HWND) {
         let button1_text: PWSTR;
         let button2_text: PWSTR;
         {
-            if get_program_status() {
+            if PROGRAM_DATA.get_status() {
                 button1_text = PWSTR::from_raw(h!("Altccents is ON").as_ptr() as *mut u16);
                 button2_text = PWSTR::from_raw(h!("Turn off altccents").as_ptr() as *mut u16);
             } else {
@@ -155,14 +167,27 @@ pub fn context_menu(hwnd: HWND) {
             Err(_) => panic!("Failed to insert menu item"),
         };
 
+        // This line fixes bug when the menu does not close until you press one of menu buttons
+        // For more info see:
+        // https://forums.codeguru.com/showthread.php?210985-Popup-Menu-on-system-tray-icon
+        SetForegroundWindow(program_data.get_hwnd());
+
         TrackPopupMenu(
             menu,
             TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON,
             cursor_pos.x,
             cursor_pos.y,
             0,
-            hwnd,
+            program_data.get_hwnd(),
             None,
+        );
+
+        // This line fixes bug. See comment above
+        let _ = PostMessageW(
+            program_data.get_hwnd(),
+            WM_NULL,
+            WPARAM { 0: 0 },
+            LPARAM { 0: 0 },
         );
     }
 }

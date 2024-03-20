@@ -2,24 +2,24 @@
 
 mod config;
 mod hook;
+mod session;
 mod tray;
 mod window;
 
+use session::PROGRAM_DATA;
 use windows::{core::*, Win32::UI::WindowsAndMessaging::*};
 
 fn main() -> Result<()> {
     unsafe {
-        let hwnd = match window::create_window() {
+        match window::create_window() {
             Err(_) => panic!("Failed to create a window!"),
-            Ok(handle) => handle,
+            Ok(hwnd) => PROGRAM_DATA.set_hwnd(hwnd),
         };
 
-        let mut tray_icon = tray::get_tray_icon_data(hwnd);
-        tray::add_tray_icon(&tray_icon);
-        // TODO: create program_state struct
-        tray::update_tray_icon(&mut tray_icon);
+        PROGRAM_DATA.set_tray_icon_data(tray::init_tray_icon_data(&PROGRAM_DATA));
+        tray::add_tray_icon(&PROGRAM_DATA);
 
-        let hhk = hook::setup_hook();
+        PROGRAM_DATA.set_hhook(hook::setup_hook());
 
         // Message buffer
         let mut message = MSG::default();
@@ -31,8 +31,8 @@ fn main() -> Result<()> {
             TranslateMessage(&message);
         }
 
-        tray::delete_tray_icon(&tray_icon);
-        hook::remove_hook(hhk);
+        tray::delete_tray_icon(&PROGRAM_DATA);
+        hook::remove_hook(PROGRAM_DATA.get_hhook());
         Ok(())
     }
 }
