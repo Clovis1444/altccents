@@ -14,6 +14,7 @@ pub const MAX_KEY_INTERVAL: u32 = 1000;
 pub const DEFAULT_PROGRAM_STATUS: bool = true;
 
 pub const PROGRAM_NAME: PCWSTR = w!("Altccents");
+pub const PROGRAM_SITE: PCWSTR = w!("https://github.com/Clovis1444/altccents");
 pub const TIMER_ID: usize = 1337;
 pub const TRAY_ICON_ID: u32 = 1337;
 pub const TRAY_ICON_IMG_ON: PCWSTR = IDI_QUESTION;
@@ -23,5 +24,6 @@ pub const TRAY_ICON_TIP_TEXT: &str = "Altccents";
 pub const TRAY_CALLBACK_MESSAGE: u32 = 33333;
 pub const SWITCH_PROGRAM_STATE_BUTTON_ID: u32 = 100;
 pub const QUIT_BUTTON_ID: u32 = 101;
+pub const ABOUT_BUTTON_ID: u32 = 102;
 
 // TODO: load custom icons here

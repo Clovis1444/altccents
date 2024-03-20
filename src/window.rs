@@ -3,7 +3,9 @@
 use windows::{
     core::*,
     Win32::{
-        Foundation::*, Graphics::Gdi::*, System::LibraryLoader::*, UI::WindowsAndMessaging::*,
+        Foundation::*,
+        System::LibraryLoader::*,
+        UI::{Shell::ShellExecuteW, WindowsAndMessaging::*},
     },
 };
 
@@ -63,16 +65,10 @@ extern "system" fn wndproc(
 ) -> LRESULT {
     unsafe {
         match message {
-            WM_PAINT => {
-                ValidateRect(window, None);
-                LRESULT(0)
-            }
             WM_DESTROY => {
                 PostQuitMessage(0);
                 LRESULT(0)
             }
-            WM_KEYDOWN => LRESULT(0),
-            WM_CHAR => LRESULT(0),
             TRAY_CALLBACK_MESSAGE => match l_param.0 as u32 {
                 WM_LBUTTONDOWN => {
                     println!("Tray: Switching program status...");
@@ -88,17 +84,29 @@ extern "system" fn wndproc(
                 }
                 _ => DefWindowProcW(window, message, w_param, l_param),
             },
-            WM_COMMAND => {
-                match w_param.0 as u32 {
-                    SWITCH_PROGRAM_STATE_BUTTON_ID => {
-                        PROGRAM_DATA.change_status();
-                        tray::update_tray_icon(&mut PROGRAM_DATA)
-                    }
-                    QUIT_BUTTON_ID => PostQuitMessage(0),
-                    _ => (),
+            WM_COMMAND => match w_param.0 as u32 {
+                SWITCH_PROGRAM_STATE_BUTTON_ID => {
+                    PROGRAM_DATA.change_status();
+                    tray::update_tray_icon(&mut PROGRAM_DATA);
+                    LRESULT(0)
                 }
-                LRESULT(0)
-            }
+                ABOUT_BUTTON_ID => {
+                    ShellExecuteW(
+                        HWND::default(),
+                        PCWSTR::null(),
+                        PROGRAM_SITE,
+                        PCWSTR::null(),
+                        PCWSTR::null(),
+                        SW_SHOW,
+                    );
+                    LRESULT(0)
+                }
+                QUIT_BUTTON_ID => {
+                    PostQuitMessage(0);
+                    LRESULT(0)
+                }
+                _ => DefWindowProcW(window, message, w_param, l_param),
+            },
             _ => DefWindowProcW(window, message, w_param, l_param),
         }
     }

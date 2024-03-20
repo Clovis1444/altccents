@@ -154,6 +154,19 @@ pub fn context_menu(program_data: &session::ProgramData) {
             Err(_) => panic!("Failed to insert menu item"),
         };
 
+        // About button
+        let button3 = MENUITEMINFOW {
+            cbSize: size_of::<MENUITEMINFOW>() as u32,
+            fMask: MIIM_STRING | MIIM_ID,
+            wID: ABOUT_BUTTON_ID,
+            dwTypeData: PWSTR::from_raw(h!("About").as_ptr() as *mut u16),
+            ..Default::default()
+        };
+        match InsertMenuItemW(menu, 4, true, &button3) {
+            Ok(_) => (),
+            Err(_) => panic!("Failed to insert menu item"),
+        };
+
         // Quit button
         let button3 = MENUITEMINFOW {
             cbSize: size_of::<MENUITEMINFOW>() as u32,
@@ -162,7 +175,7 @@ pub fn context_menu(program_data: &session::ProgramData) {
             dwTypeData: PWSTR::from_raw(h!("Quit").as_ptr() as *mut u16),
             ..Default::default()
         };
-        match InsertMenuItemW(menu, 4, true, &button3) {
+        match InsertMenuItemW(menu, 5, true, &button3) {
             Ok(_) => (),
             Err(_) => panic!("Failed to insert menu item"),
         };
