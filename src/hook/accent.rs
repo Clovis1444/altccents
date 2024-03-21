@@ -52,7 +52,9 @@ pub fn update_input_state(current_key: &VIRTUAL_KEY) {
         }
 
         // If current key is accent key -> set timer
-        set_timer(PROGRAM_DATA.get_hwnd());
+        if USE_TIMER {
+            set_timer(PROGRAM_DATA.get_hwnd());
+        }
     }
 }
 
@@ -96,14 +98,20 @@ pub fn send_char(ch: char) {
     }
 }
 
-// Will not send char if there is no accent in INPUT_STATE
-pub fn send_char_and_kill_timer() {
+// Will not send accent if there is no accent in INPUT_STATE, Will not kill timer if config::USE_TIMER is false
+pub fn send_accent_and_kill_timer() {
     unsafe {
         match get_input_state() {
             Some((key, index)) => {
-                kill_timer(PROGRAM_DATA.get_hwnd(), TIMER_ID);
+                if USE_TIMER {
+                    kill_timer(PROGRAM_DATA.get_hwnd(), TIMER_ID);
+                }
 
-                let is_capital = GetKeyState(VK_CAPITAL.0.into()) & 0x0001 != 0;
+                let caps = GetKeyState(VK_CAPITAL.0.into()) & 0x0001 != 0;
+                let shift = GetKeyState(VK_LSHIFT.0.into()) & 0x8000u16 as i16 != 0
+                    || GetKeyState(VK_RSHIFT.0.into()) & 0x8000u16 as i16 != 0;
+                // XOR
+                let is_capital = caps != shift;
 
                 send_char(get_accent(key, is_capital, index));
             }

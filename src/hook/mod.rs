@@ -11,7 +11,9 @@ use super::{config::*, session::PROGRAM_DATA};
 use windows::Win32::{
     Foundation::*,
     UI::{
-        Input::KeyboardAndMouse::{GetKeyState, VIRTUAL_KEY, VK_BACK, VK_CAPITAL, VK_PACKET},
+        Input::KeyboardAndMouse::{
+            GetKeyState, VIRTUAL_KEY, VK_BACK, VK_CAPITAL, VK_LSHIFT, VK_PACKET, VK_RSHIFT,
+        },
         WindowsAndMessaging::*,
     },
 };
@@ -56,8 +58,14 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
 
                 let control = GetKeyState(CONTROL_KEY.0.into()) & 0x8000u16 as i16 != 0;
 
-                // ignore our CONTROL_KEY, Caps Lock
-                if msg_vk == VK_PACKET || msg_vk == VK_BACK || msg_vk == VK_CAPITAL || !control {
+                // ignore CONTROL_KEY, Caps Lock, L an R Shift
+                if msg_vk == VK_PACKET
+                    || msg_vk == VK_BACK
+                    || msg_vk == VK_CAPITAL
+                    || msg_vk == VK_LSHIFT
+                    || msg_vk == VK_RSHIFT
+                    || !control
+                {
                     break 'keydown;
                 }
 
@@ -77,7 +85,7 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                         None => (),
                     };
 
-                    accent::send_char_and_kill_timer()
+                    accent::send_accent_and_kill_timer()
                 }
 
                 accent::update_input_state(&msg_vk);
@@ -97,7 +105,7 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                 if msg_vk == CONTROL_KEY {
                     println!("Num UP!");
 
-                    accent::send_char_and_kill_timer();
+                    accent::send_accent_and_kill_timer();
 
                     accent::reset_input_state();
                 }

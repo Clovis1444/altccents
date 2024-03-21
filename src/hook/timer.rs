@@ -28,7 +28,7 @@ pub fn kill_timer(hwnd: HWND, timer_id: usize) {
 unsafe extern "system" fn timer_proc(_hwnd: HWND, _message: u32, timer_id: usize, _curr_time: u32) {
     match timer_id {
         TIMER_ID => {
-            accent::send_char_and_kill_timer();
+            accent::send_accent_and_kill_timer();
             reset_input_state();
         }
         _ => (),
