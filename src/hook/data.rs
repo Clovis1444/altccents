@@ -68,6 +68,25 @@ pub fn get_accent(key: AccentKey, is_capital: bool, index: usize) -> char {
     }
 }
 
+pub fn get_accent_chars(key: AccentKey, is_capital: bool) -> &'static [char] {
+    if let AccentKey::EnumLength = key {
+        return &['?'];
+    }
+
+    let accent = &ACCENT_LIST[key as usize];
+
+    match is_capital {
+        false => accent.lower_case,
+        true => {
+            if accent.upper_case.is_empty() {
+                return accent.lower_case;
+            } else {
+                return accent.upper_case;
+            }
+        }
+    }
+}
+
 pub fn accent_amount(key: &AccentKey) -> Option<usize> {
     if let AccentKey::EnumLength = key {
         return None;

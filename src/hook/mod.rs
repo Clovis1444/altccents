@@ -1,7 +1,7 @@
 // hook.rs
 
-mod accent;
-mod data;
+pub mod accent;
+pub mod data;
 #[cfg(test)]
 mod tests;
 mod timer;
@@ -10,6 +10,7 @@ use super::{config::*, session::PROGRAM_DATA};
 
 use windows::Win32::{
     Foundation::*,
+    Graphics::Gdi::{RedrawWindow, RDW_ERASE, RDW_INTERNALPAINT, RDW_INVALIDATE},
     UI::{
         Input::KeyboardAndMouse::{
             GetKeyState, VIRTUAL_KEY, VK_BACK, VK_CAPITAL, VK_LSHIFT, VK_PACKET, VK_RSHIFT,
@@ -89,6 +90,12 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                 }
 
                 accent::update_input_state(&msg_vk);
+                RedrawWindow(
+                    PROGRAM_DATA.get_hwnd(),
+                    None,
+                    None,
+                    RDW_INTERNALPAINT | RDW_INVALIDATE | RDW_ERASE,
+                );
 
                 // If current key is not accent key - send default
                 if let None = data::AccentKey::from_vk(&msg_vk) {
@@ -103,8 +110,6 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                 };
 
                 if msg_vk == CONTROL_KEY {
-                    println!("Num UP!");
-
                     accent::send_accent_and_kill_timer();
 
                     accent::reset_input_state();

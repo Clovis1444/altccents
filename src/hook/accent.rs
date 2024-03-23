@@ -58,6 +58,16 @@ pub fn update_input_state(current_key: &VIRTUAL_KEY) {
     }
 }
 
+pub fn check_if_capital() -> bool {
+    unsafe {
+        let caps = GetKeyState(VK_CAPITAL.0.into()) & 0x0001 != 0;
+        let shift = GetKeyState(VK_LSHIFT.0.into()) & 0x8000u16 as i16 != 0
+            || GetKeyState(VK_RSHIFT.0.into()) & 0x8000u16 as i16 != 0;
+        // XOR
+        caps != shift
+    }
+}
+
 pub fn reset_input_state() {
     unsafe {
         INPUT_STATE.accent = None;
@@ -107,18 +117,11 @@ pub fn send_accent_and_kill_timer() {
                     kill_timer(PROGRAM_DATA.get_hwnd(), TIMER_ID);
                 }
 
-                let caps = GetKeyState(VK_CAPITAL.0.into()) & 0x0001 != 0;
-                let shift = GetKeyState(VK_LSHIFT.0.into()) & 0x8000u16 as i16 != 0
-                    || GetKeyState(VK_RSHIFT.0.into()) & 0x8000u16 as i16 != 0;
-                // XOR
-                let is_capital = caps != shift;
+                let is_capital = check_if_capital();
 
                 send_char(get_accent(key, is_capital, index));
             }
-            None => {
-                // println!("Failed to send char: not an accent key")
-                ()
-            }
+            None => (),
         }
     }
 }

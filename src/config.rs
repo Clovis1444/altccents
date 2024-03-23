@@ -16,6 +16,8 @@ pub const DEFAULT_PROGRAM_STATUS: bool = true;
 
 pub const PROGRAM_NAME: PCWSTR = w!("Altccents");
 pub const PROGRAM_SITE: PCWSTR = w!("https://github.com/Clovis1444/altccents");
+// pub const POPUP_FONT: PCWSTR = w!("Inter-Medium.ttf");
+pub const POPUP_FONT: PCWSTR = w!("Inter-VariableFont_slnt,wght.ttf");
 pub const TIMER_ID: usize = 1337;
 pub const TRAY_ICON_ID: u32 = 1337;
 pub const TRAY_ICON_IMG_ON: PCWSTR = IDI_QUESTION;

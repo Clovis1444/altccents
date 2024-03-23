@@ -4,16 +4,17 @@ use windows::{
     core::*,
     Win32::{
         Foundation::*,
+        Graphics::Gdi::*,
         System::LibraryLoader::*,
         UI::{Shell::ShellExecuteW, WindowsAndMessaging::*},
     },
 };
 
-use super::{config::*, session::PROGRAM_DATA, tray};
+use super::{config::*, draw::*, session::PROGRAM_DATA, tray};
 
 pub fn create_window() -> Result<HWND> {
-    let hwnd: HWND;
     unsafe {
+        let hwnd: HWND;
         // Module handle. In this case - our binary handle
         let instance = GetModuleHandleW(None)?;
         debug_assert!(instance.0 != 0);
@@ -25,6 +26,9 @@ pub fn create_window() -> Result<HWND> {
             hCursor: LoadCursorW(None, IDC_ARROW)?,
             hInstance: instance.into(),
             lpszClassName: window_class,
+            hbrBackground: HBRUSH {
+                0: GetStockObject(BLACK_BRUSH).0,
+            },
 
             style: CS_HREDRAW | CS_VREDRAW,
             lpfnWndProc: Some(wndproc),
@@ -37,23 +41,33 @@ pub fn create_window() -> Result<HWND> {
 
         // Create window
         hwnd = CreateWindowExW(
-            WINDOW_EX_STYLE::default(),
+            // WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_LAYERED,
+            WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
             window_class,
             PROGRAM_NAME,
-            // Set dwstyle flag "WS_VISIBLE" to make window visible
-            WS_OVERLAPPEDWINDOW,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
+            //
+            WS_POPUP | WS_VISIBLE,
+            100,
+            100,
+            800,
+            600,
             None,
             None,
             instance,
             None,
         );
-    }
 
-    Ok(hwnd)
+        // let _ = SetLayeredWindowAttributes(
+        //     hwnd,
+        //     COLORREF {
+        //         0: 0x00000000 as u32,
+        //     },
+        //     128,
+        //     LWA_ALPHA | LWA_COLORKEY,
+        // );
+
+        Ok(hwnd)
+    }
 }
 
 // Message handler. Main window logic
@@ -71,14 +85,11 @@ extern "system" fn wndproc(
             }
             TRAY_CALLBACK_MESSAGE => match l_param.0 as u32 {
                 WM_LBUTTONDOWN => {
-                    println!("Tray: Switching program status...");
                     PROGRAM_DATA.change_status();
                     tray::update_tray_icon(&mut PROGRAM_DATA);
-                    println!("Tray: program status now is {}", PROGRAM_DATA.get_status());
                     LRESULT(0)
                 }
                 WM_RBUTTONDOWN => {
-                    println!("Tray: right mouse click");
                     tray::context_menu(&PROGRAM_DATA);
                     LRESULT(0)
                 }
@@ -107,6 +118,17 @@ extern "system" fn wndproc(
                 }
                 _ => DefWindowProcW(window, message, w_param, l_param),
             },
+            WM_PAINT => {
+                let mut ps = PAINTSTRUCT::default();
+                let hdc = BeginPaint(PROGRAM_DATA.get_hwnd(), &mut ps);
+                //
+
+                draw(hdc);
+
+                //
+                EndPaint(PROGRAM_DATA.get_hwnd(), &mut ps);
+                LRESULT(0)
+            }
             _ => DefWindowProcW(window, message, w_param, l_param),
         }
     }
