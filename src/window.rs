@@ -41,30 +41,27 @@ pub fn create_window() -> Result<HWND> {
 
         // Create window
         hwnd = CreateWindowExW(
-            // WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_LAYERED,
-            WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
+            WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_LAYERED,
             window_class,
             PROGRAM_NAME,
             //
             WS_POPUP | WS_VISIBLE,
-            100,
-            100,
-            800,
-            600,
+            0,
+            0,
+            1920,
+            1080,
             None,
             None,
             instance,
             None,
         );
 
-        // let _ = SetLayeredWindowAttributes(
-        //     hwnd,
-        //     COLORREF {
-        //         0: 0x00000000 as u32,
-        //     },
-        //     128,
-        //     LWA_ALPHA | LWA_COLORKEY,
-        // );
+        let _ = SetLayeredWindowAttributes(
+            hwnd,
+            POPUP_WINDOW_TRANSPARENT_COLOR,
+            POPUP_WINDOW_TRANSPARENCY,
+            LWA_ALPHA | LWA_COLORKEY,
+        );
 
         Ok(hwnd)
     }

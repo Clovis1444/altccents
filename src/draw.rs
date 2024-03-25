@@ -1,5 +1,4 @@
 // draw.rs
-// https://www.youtube.com/watch?v=JRHltI71QiQ
 
 use windows::Win32::{Foundation::RECT, Graphics::Gdi::*};
 
@@ -10,14 +9,8 @@ use super::hook::data;
 
 pub fn draw(hdc: HDC) {
     unsafe {
-        // let pen = CreatePen(PS_SOLID, 20, COLORREF { 0: 0x0000FF00 });
-        // SelectObject(hdc, GetStockObject(BLACK_PEN));
-        // SelectObject(hdc, pen);
-        // SelectObject(hdc, GetStockObject(GRAY_BRUSH));
-        // Rectangle(hdc, 400, 200, 100, 100);
-
-        let key = match accent::get_input_state() {
-            Some((key, _)) => key,
+        let (key, index) = match accent::get_input_state() {
+            Some((key, index)) => (key, index),
             None => return,
         };
         let is_capital = accent::check_if_capital();
@@ -27,20 +20,13 @@ pub fn draw(hdc: HDC) {
             u16_arr.push(*i as u16);
         }
 
-        let mut rect: RECT = RECT {
-            left: 100,
-            top: 100,
-            right: 600,
-            bottom: 500,
-        };
-
         // Font
         let font: HFONT = CreateFontW(
-            60,
-            60,
+            POPUP_FONT_SIZE,
+            POPUP_FONT_SIZE,
             0,
             0,
-            FW_HEAVY.0 as i32,
+            FW_NORMAL.0 as i32,
             0,
             0,
             0,
@@ -52,26 +38,55 @@ pub fn draw(hdc: HDC) {
             POPUP_FONT,
         );
 
-        SelectObject(hdc, font);
+        let old_font = SelectObject(hdc, font);
+        SetTextColor(hdc, POPUP_FONT_COLOR);
+        SetBkMode(hdc, TRANSPARENT);
 
-        DrawTextExW(hdc, &mut u16_arr, &mut rect, DT_CENTER, None);
+        // Brush
+        let cell_brush = CreateSolidBrush(POPUP_CELL_COLOR);
+        let select_cell_brush = CreateSolidBrush(POPUP_SELECT_CELL_COLOR);
 
+        // Draw
+        let len = u16_arr.len() as i32;
+
+        let left = 0;
+        let top = 0;
+        let right = 50;
+        let bottom = 50;
+
+        let mut count: usize = 0;
+        while count < len as usize {
+            let mut text_rect = RECT {
+                left: left + (count as i32) * POPUP_CELL_SIZE,
+                top: top,
+                right: right + (count as i32) * POPUP_CELL_SIZE,
+                bottom: bottom,
+            };
+
+            let brush: HBRUSH;
+            if count == index {
+                brush = select_cell_brush;
+            } else {
+                brush = cell_brush;
+            }
+
+            FillRect(hdc, &text_rect, brush);
+
+            DrawTextExW(
+                hdc,
+                &mut u16_arr[count..=count],
+                &mut text_rect,
+                DT_CENTER | DT_SINGLELINE | DT_VCENTER,
+                None,
+            );
+            count += 1;
+        }
+
+        // Reset default font
+        SelectObject(hdc, old_font);
+        // Delete created objects
         DeleteObject(font);
-
-        // DeleteObject(pen);
-
-        // FillRect(
-        //     hdc,
-        //     &RECT {
-        //         left: 400,
-        //         top: 200,
-        //         right: 100,
-        //         bottom: 100,
-        //     },
-        //     HBRUSH {
-        //         0: GetStockObject(GRAY_BRUSHs).0,
-        //     },
-        // );
-        // draw(&mut hdc);
+        DeleteObject(cell_brush);
+        DeleteObject(select_cell_brush);
     }
 }
