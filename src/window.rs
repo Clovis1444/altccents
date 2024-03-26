@@ -10,7 +10,7 @@ use windows::{
     },
 };
 
-use super::{config::*, draw::*, session::PROGRAM_DATA, tray};
+use super::{config::*, popup, session::PROGRAM_DATA, tray};
 
 pub fn create_window() -> Result<HWND> {
     unsafe {
@@ -120,7 +120,7 @@ extern "system" fn wndproc(
                 let hdc = BeginPaint(PROGRAM_DATA.get_hwnd(), &mut ps);
                 //
 
-                draw(hdc);
+                popup::draw(hdc);
 
                 //
                 EndPaint(PROGRAM_DATA.get_hwnd(), &mut ps);

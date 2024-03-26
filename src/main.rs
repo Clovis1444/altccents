@@ -2,8 +2,8 @@
 // #![cfg_attr(not(test), windows_subsystem = "windows")]
 
 mod config;
-mod draw;
 mod hook;
+mod popup;
 mod session;
 mod tray;
 mod window;

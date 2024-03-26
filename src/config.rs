@@ -21,12 +21,18 @@ pub const PROGRAM_NAME: PCWSTR = w!("Altccents");
 pub const PROGRAM_SITE: PCWSTR = w!("https://github.com/Clovis1444/altccents");
 pub const POPUP_FONT: PCWSTR = w!("Georgia");
 pub const POPUP_FONT_SIZE: i32 = 20;
-pub const POPUP_FONT_COLOR: COLORREF = COLORREF { 0: 0x0000FF00 }; // green
+pub const POPUP_FONT_COLOR: COLORREF = COLORREF { 0: 0x00E0E7E9 }; // Platinum
 pub const POPUP_WINDOW_TRANSPARENT_COLOR: COLORREF = COLORREF { 0: 0x00000000 }; // black
 pub const POPUP_WINDOW_TRANSPARENCY: u8 = 255;
+// Should be even, do not make too small
 pub const POPUP_CELL_SIZE: i32 = 50;
-pub const POPUP_CELL_COLOR: COLORREF = COLORREF { 0: 0x00FF0000 }; // blue
-pub const POPUP_SELECT_CELL_COLOR: COLORREF = COLORREF { 0: 0x00FFFFFF }; // white
+pub const POPUP_SELECT_CELL_SIZE: i32 = (POPUP_CELL_SIZE as f32 * 0.9) as i32;
+pub const POPUP_CELL_COLOR: COLORREF = COLORREF { 0: 0x002B2117 };
+pub const POPUP_SELECT_CELL_COLOR: COLORREF = COLORREF { 0: 0x0078522B };
+// Use value of POPUP_CELL_SIZE for max rounding
+pub const POPUP_CELL_ROUND: i32 = POPUP_CELL_SIZE / 7;
+pub const POPUP_SELECT_CELL_ROUND: i32 = POPUP_SELECT_CELL_SIZE / 7;
+pub const POPUP_CIRCLE_SELECTION: bool = false;
 pub const TIMER_ID: usize = 1337;
 pub const TRAY_ICON_ID: u32 = 1337;
 pub const TRAY_ICON_IMG_ON: PCWSTR = IDI_QUESTION;
