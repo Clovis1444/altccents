@@ -4,6 +4,7 @@
 mod config;
 mod hook;
 mod popup;
+mod resources;
 mod session;
 mod tray;
 mod window;
@@ -13,6 +14,8 @@ use windows::{core::*, Win32::UI::WindowsAndMessaging::*};
 
 fn main() -> Result<()> {
     unsafe {
+        resources::init_resources();
+
         match window::create_window() {
             Err(_) => panic!("Failed to create a window!"),
             Ok(hwnd) => PROGRAM_DATA.set_hwnd(hwnd),

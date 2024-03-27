@@ -44,12 +44,11 @@ pub fn create_window() -> Result<HWND> {
             WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_LAYERED,
             window_class,
             PROGRAM_NAME,
-            //
             WS_POPUP | WS_VISIBLE,
             0,
             0,
-            1920,
-            1080,
+            GetSystemMetrics(SM_CXSCREEN),
+            GetSystemMetrics(SM_CYSCREEN),
             None,
             None,
             instance,
@@ -128,5 +127,16 @@ extern "system" fn wndproc(
             }
             _ => DefWindowProcW(window, message, w_param, l_param),
         }
+    }
+}
+
+pub fn redraw() {
+    unsafe {
+        RedrawWindow(
+            PROGRAM_DATA.get_hwnd(),
+            None,
+            None,
+            RDW_INTERNALPAINT | RDW_INVALIDATE | RDW_ERASE,
+        );
     }
 }

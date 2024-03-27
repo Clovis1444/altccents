@@ -1,10 +1,9 @@
 // popup.rs
 
 use windows::Win32::Foundation::COLORREF;
-use windows::Win32::{Foundation::RECT, Graphics::Gdi::*};
+use windows::Win32::{Foundation::RECT, Graphics::Gdi::*, UI::WindowsAndMessaging::*};
 
 use super::config::*;
-
 use super::hook::accent;
 use super::hook::data;
 
@@ -116,21 +115,21 @@ pub fn draw(hdc: HDC) {
             if count == index {
                 let old_brush = SelectObject(hdc, select_cell_brush);
 
-                let indent = POPUP_CELL_SIZE - POPUP_SELECT_CELL_SIZE;
+                let margin = POPUP_CELL_SIZE - POPUP_SELECT_CELL_SIZE;
                 if POPUP_CIRCLE_SELECTION {
                     Ellipse(
                         hdc,
-                        text_rect.left + indent,
-                        text_rect.top + indent,
-                        text_rect.right - indent,
-                        text_rect.bottom - indent,
+                        text_rect.left + margin,
+                        text_rect.top + margin,
+                        text_rect.right - margin,
+                        text_rect.bottom - margin,
                     );
                 } else {
                     let select_rect = RECT {
-                        left: text_rect.left + indent,
-                        top: text_rect.top + indent,
-                        right: text_rect.right - indent,
-                        bottom: text_rect.bottom - indent,
+                        left: text_rect.left + margin,
+                        top: text_rect.top + margin,
+                        right: text_rect.right - margin,
+                        bottom: text_rect.bottom - margin,
                     };
 
                     RoundRect(
@@ -173,30 +172,33 @@ pub fn draw(hdc: HDC) {
 
 // TODO: adapt to different resolutions
 fn get_popup_rect(cell_amount: i32) -> RECT {
-    let width = 1920;
-    let height = 1080;
+    unsafe {
+        // Get main monitor resolution
+        let width = GetSystemMetrics(SM_CXSCREEN);
+        let height = GetSystemMetrics(SM_CYSCREEN);
 
-    // 90% of height
-    let bottom = height - 1080 / 10;
-    let top = bottom - POPUP_CELL_SIZE;
-    let left: i32;
-    let right: i32;
+        // 90% of height
+        let bottom = height - height / 10;
+        let top = bottom - POPUP_CELL_SIZE;
+        let left: i32;
+        let right: i32;
 
-    if cell_amount % 2 == 0 {
-        let center = width / 2;
-        left = center - cell_amount / 2 * POPUP_CELL_SIZE;
-        right = center + cell_amount / 2 * POPUP_CELL_SIZE;
-    } else {
-        let center = width / 2;
-        left = center - POPUP_CELL_SIZE / 2 - cell_amount / 2 * POPUP_CELL_SIZE;
-        right = center + POPUP_CELL_SIZE / 2 + cell_amount / 2 * POPUP_CELL_SIZE;
-    }
+        if cell_amount % 2 == 0 {
+            let center = width / 2;
+            left = center - cell_amount / 2 * POPUP_CELL_SIZE;
+            right = center + cell_amount / 2 * POPUP_CELL_SIZE;
+        } else {
+            let center = width / 2;
+            left = center - POPUP_CELL_SIZE / 2 - cell_amount / 2 * POPUP_CELL_SIZE;
+            right = center + POPUP_CELL_SIZE / 2 + cell_amount / 2 * POPUP_CELL_SIZE;
+        }
 
-    RECT {
-        left: left,
-        top: top,
-        right: right,
-        bottom: bottom,
+        RECT {
+            left: left,
+            top: top,
+            right: right,
+            bottom: bottom,
+        }
     }
 }
 

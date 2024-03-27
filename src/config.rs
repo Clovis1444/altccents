@@ -19,7 +19,8 @@ pub const DEFAULT_PROGRAM_STATUS: bool = true;
 
 pub const PROGRAM_NAME: PCWSTR = w!("Altccents");
 pub const PROGRAM_SITE: PCWSTR = w!("https://github.com/Clovis1444/altccents");
-pub const POPUP_FONT: PCWSTR = w!("Georgia");
+// pub const POPUP_FONT: PCWSTR = w!("Georgia");
+pub const POPUP_FONT: PCWSTR = w!("SchneiderBuchDeutschShadowTwo-87YD");
 pub const POPUP_FONT_SIZE: i32 = 20;
 pub const POPUP_FONT_COLOR: COLORREF = COLORREF { 0: 0x00E0E7E9 }; // Platinum
 pub const POPUP_WINDOW_TRANSPARENT_COLOR: COLORREF = COLORREF { 0: 0x00000000 }; // black

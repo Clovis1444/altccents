@@ -6,11 +6,10 @@ pub mod data;
 mod tests;
 mod timer;
 
-use super::{config::*, session::PROGRAM_DATA};
+use super::{config::*, session::PROGRAM_DATA, window};
 
 use windows::Win32::{
     Foundation::*,
-    Graphics::Gdi::{RedrawWindow, RDW_ERASE, RDW_INTERNALPAINT, RDW_INVALIDATE},
     UI::{
         Input::KeyboardAndMouse::{
             GetKeyState, VIRTUAL_KEY, VK_BACK, VK_CAPITAL, VK_LSHIFT, VK_PACKET, VK_RSHIFT,
@@ -59,6 +58,11 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
 
                 let control = GetKeyState(CONTROL_KEY.0.into()) & 0x8000u16 as i16 != 0;
 
+                // Redraw popup on shift/caps lock changes
+                if control && (msg_vk == VK_CAPITAL || msg_vk == VK_LSHIFT || msg_vk == VK_RSHIFT) {
+                    window::redraw();
+                }
+
                 // ignore CONTROL_KEY, Caps Lock, L an R Shift
                 if msg_vk == VK_PACKET
                     || msg_vk == VK_BACK
@@ -90,12 +94,9 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                 }
 
                 accent::update_input_state(&msg_vk);
-                RedrawWindow(
-                    PROGRAM_DATA.get_hwnd(),
-                    None,
-                    None,
-                    RDW_INTERNALPAINT | RDW_INVALIDATE | RDW_ERASE,
-                );
+
+                // Redraw popup
+                window::redraw();
 
                 // If current key is not accent key - send default
                 if let None = data::AccentKey::from_vk(&msg_vk) {
@@ -109,10 +110,23 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                     0: msg.vkCode as u16,
                 };
 
-                if msg_vk == CONTROL_KEY {
-                    accent::send_accent_and_kill_timer();
+                match msg_vk {
+                    CONTROL_KEY => {
+                        accent::send_accent_and_kill_timer();
 
-                    accent::reset_input_state();
+                        accent::reset_input_state();
+
+                        // Redraw popup
+                        window::redraw();
+                    }
+                    // Redraw popup if shift was released and CONTROL_KEY is pressed
+                    VK_LSHIFT | VK_RSHIFT => {
+                        let control = GetKeyState(CONTROL_KEY.0.into()) & 0x8000u16 as i16 != 0;
+                        if control {
+                            window::redraw();
+                        }
+                    }
+                    _ => (),
                 }
             }
             _ => (),
