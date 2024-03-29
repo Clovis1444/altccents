@@ -170,7 +170,6 @@ pub fn draw(hdc: HDC) {
     }
 }
 
-// TODO: adapt to different resolutions
 fn get_popup_rect(cell_amount: i32) -> RECT {
     unsafe {
         // Get main monitor resolution

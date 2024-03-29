@@ -19,13 +19,12 @@ pub fn create_window() -> Result<HWND> {
         let instance = GetModuleHandleW(None)?;
         debug_assert!(instance.0 != 0);
 
-        let window_class = PROGRAM_NAME;
-
         // Window attributes
         let wc = WNDCLASSW {
             hCursor: LoadCursorW(None, IDC_ARROW)?,
             hInstance: instance.into(),
-            lpszClassName: window_class,
+            lpszClassName: PROGRAM_NAME,
+            hIcon: LoadIconW(GetModuleHandleW(None).unwrap(), PROGRAM_ICON_IMG).unwrap(),
             hbrBackground: HBRUSH {
                 0: GetStockObject(BLACK_BRUSH).0,
             },
@@ -42,7 +41,7 @@ pub fn create_window() -> Result<HWND> {
         // Create window
         hwnd = CreateWindowExW(
             WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_LAYERED,
-            window_class,
+            PROGRAM_NAME,
             PROGRAM_NAME,
             WS_POPUP | WS_VISIBLE,
             0,

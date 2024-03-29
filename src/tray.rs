@@ -8,7 +8,8 @@ use std::mem::size_of;
 use windows::{
     core::{h, PCWSTR, PWSTR},
     Win32::{
-        Foundation::{HINSTANCE, LPARAM, POINT, WPARAM},
+        Foundation::{LPARAM, POINT, WPARAM},
+        System::LibraryLoader::GetModuleHandleW,
         UI::{Shell::*, WindowsAndMessaging::*},
     },
 };
@@ -42,7 +43,7 @@ pub fn init_tray_icon_data(program_data: &session::ProgramData) -> NOTIFYICONDAT
             uID: TRAY_ICON_ID,
             uFlags: NIF_ICON | NIF_MESSAGE | NIF_TIP,
             uCallbackMessage: TRAY_CALLBACK_MESSAGE,
-            hIcon: LoadIconW(HINSTANCE { 0: 0 }, icon_img).unwrap(),
+            hIcon: LoadIconW(GetModuleHandleW(None).unwrap(), icon_img).unwrap(),
             szTip: tip_text,
             ..Default::default()
         };
@@ -50,7 +51,6 @@ pub fn init_tray_icon_data(program_data: &session::ProgramData) -> NOTIFYICONDAT
     }
 }
 
-// TODO: load custom icons
 pub fn add_tray_icon(program_data: &session::ProgramData) {
     unsafe {
         match Shell_NotifyIconW(NIM_ADD, &program_data.get_tray_icon_data()).as_bool() {
@@ -81,7 +81,7 @@ pub fn update_tray_icon(program_data: &mut session::ProgramData) {
         }
 
         let mut icon_data = program_data.get_tray_icon_data();
-        icon_data.hIcon = LoadIconW(HINSTANCE { 0: 0 }, new_icon).unwrap();
+        icon_data.hIcon = LoadIconW(GetModuleHandleW(None).unwrap(), new_icon).unwrap();
         program_data.set_tray_icon_data(icon_data);
 
         match Shell_NotifyIconW(NIM_MODIFY, &icon_data).as_bool() {

@@ -1,44 +1,53 @@
 // resources.rs
 
 use windows::{
-    core::w,
+    core::PCWSTR,
     Win32::{
-        Graphics::Gdi::{CreateFontIndirectW, RemoveFontMemResourceEx, LOGFONTW},
-        System::LibraryLoader::{FindResourceW, GetModuleHandleW, LoadResource, LockResource},
+        Foundation::HANDLE,
+        Graphics::Gdi::*,
+        System::LibraryLoader::{
+            FindResourceW, GetModuleHandleW, LoadResource, LockResource, SizeofResource,
+        },
         UI::WindowsAndMessaging::RT_FONT,
     },
 };
 
-struct ResourceData {}
+struct ResourceData {
+    h_font: Option<HANDLE>,
+}
 
-static mut resource_data: ResourceData = ResourceData {};
+static mut RESOURCE_DATA: ResourceData = ResourceData { h_font: None };
 
 pub fn init_resources() {
     unsafe {
+        // Return if resources was already initialised
+        if let Some(_) = RESOURCE_DATA.h_font {
+            return;
+        }
+
         let instance = GetModuleHandleW(None).unwrap();
-        let res = FindResourceW(instance, w!("1"), RT_FONT);
+        // Load font resource
+        // lpname - name of the font in resources.rc
+        let res = FindResourceW(instance, PCWSTR(1 as *const u16), RT_FONT);
         let font_mem = LoadResource(instance, res).unwrap();
         let font_data = LockResource(font_mem);
 
-        // let logfontw = LOGFONTW {
-        //     lfHeight: todo!(),
-        //     lfWidth: todo!(),
-        //     lfEscapement: todo!(),
-        //     lfOrientation: todo!(),
-        //     lfWeight: todo!(),
-        //     lfItalic: todo!(),
-        //     lfUnderline: todo!(),
-        //     lfStrikeOut: todo!(),
-        //     lfCharSet: todo!(),
-        //     lfOutPrecision: todo!(),
-        //     lfClipPrecision: todo!(),
-        //     lfQuality: todo!(),
-        //     lfPitchAndFamily: todo!(),
-        //     lfFaceName: todo!(),
-        // };
-        // let font = CreateFontIndirectW(&logfontw);
+        let res_size = SizeofResource(instance, res);
+        let n_fonts: u32 = 0;
+        let hfont = AddFontMemResourceEx(font_data, res_size, None, &n_fonts);
 
-        // Clean up font at the end
-        // RemoveFontMemResourceEx(font);
+        RESOURCE_DATA.h_font = Some(hfont);
+    }
+}
+
+pub fn unload_resources() {
+    unsafe {
+        match RESOURCE_DATA.h_font {
+            None => (),
+            Some(handle) => {
+                RemoveFontMemResourceEx(handle);
+                RESOURCE_DATA.h_font = None;
+            }
+        }
     }
 }

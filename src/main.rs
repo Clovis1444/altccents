@@ -36,6 +36,7 @@ fn main() -> Result<()> {
             TranslateMessage(&message);
         }
 
+        resources::unload_resources();
         tray::delete_tray_icon(&PROGRAM_DATA);
         hook::remove_hook(PROGRAM_DATA.get_hhook());
         Ok(())

@@ -3,8 +3,14 @@ name = "altccents"
 version = "0.1.0"
 edition = "2021"
 
-[target.'cfg(windows)'.build-dependencies]
-windres = "0.2.2"
+[build-dependencies]
+winres = "0.1.12"
+
+[package.metadata.winres]
+OriginalFilename = "altccents.exe"
+LegalCopyright = "Copyright © 2024"
+ProductName = "Altccents"
+FileDescription = "Type accent characters faster"
 
 [dependencies.windows]
 version = "0.54"

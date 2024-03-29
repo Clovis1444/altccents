@@ -26,7 +26,6 @@ pub fn get_input_state() -> Option<(AccentKey, usize)> {
     }
 }
 
-// TODO: Maybe implement reseting state when window was changed
 pub fn update_input_state(current_key: &VIRTUAL_KEY) {
     unsafe {
         let current_accent = match data::AccentKey::from_vk(current_key) {
