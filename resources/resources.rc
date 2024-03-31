@@ -1,0 +1,5 @@
+
+1 FONT "InterVariable.ttf"
+PROGRAM_ICON ICON "program_icon.ico"
+PROGRAM_ON_ICON ICON "program_icon_on.ico"
+PROGRAM_OFF_ICON ICON "program_icon_off.ico"
