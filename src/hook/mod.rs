@@ -6,16 +6,11 @@ pub mod data;
 mod tests;
 mod timer;
 
-use super::{config::*, session::PROGRAM_DATA, window};
+use super::{config::*, session, session::PROGRAM_DATA, tray, window};
 
 use windows::Win32::{
     Foundation::*,
-    UI::{
-        Input::KeyboardAndMouse::{
-            GetKeyState, VIRTUAL_KEY, VK_BACK, VK_CAPITAL, VK_LSHIFT, VK_PACKET, VK_RSHIFT,
-        },
-        WindowsAndMessaging::*,
-    },
+    UI::{Input::KeyboardAndMouse::*, WindowsAndMessaging::*},
 };
 
 // Install hook
@@ -47,7 +42,7 @@ pub fn remove_hook(hook: HHOOK) {
 
 // Main hook logic
 unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
-    if code == HC_ACTION.try_into().unwrap() && PROGRAM_DATA.get_status() {
+    if code == HC_ACTION.try_into().unwrap() {
         let msg: &KBDLLHOOKSTRUCT = std::mem::transmute(l_param);
 
         match w_param.0 as u32 {
@@ -57,6 +52,27 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                 };
 
                 let control = GetKeyState(CONTROL_KEY.0.into()) & 0x8000u16 as i16 != 0;
+
+                // If win + shift + control_key -> change program state and break
+                if msg_vk == CONTROL_KEY {
+                    let win = GetKeyState(VK_LWIN.0.into()) & 0x8000u16 as i16 != 0
+                        || GetKeyState(VK_RWIN.0.into()) & 0x8000u16 as i16 != 0;
+
+                    let shift = GetKeyState(VK_LSHIFT.0.into()) & 0x8000u16 as i16 != 0
+                        || GetKeyState(VK_RSHIFT.0.into()) & 0x8000u16 as i16 != 0;
+
+                    if win && shift {
+                        session::PROGRAM_DATA.change_status();
+                        // Redraw tray icon
+                        tray::update_tray_icon(&mut PROGRAM_DATA);
+                        break 'keydown;
+                    }
+                }
+
+                // If programm is off - do nothing
+                if !PROGRAM_DATA.get_status() {
+                    break 'keydown;
+                }
 
                 // Redraw popup on shift/caps lock changes
                 if control && (msg_vk == VK_CAPITAL || msg_vk == VK_LSHIFT || msg_vk == VK_RSHIFT) {

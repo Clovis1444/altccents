@@ -2,9 +2,14 @@
 
 use super::config::*;
 
-use windows::Win32::{
-    Foundation::HWND,
-    UI::{Shell::NOTIFYICONDATAW, WindowsAndMessaging::HHOOK},
+use windows::{
+    core::w,
+    Win32::{
+        Foundation::HWND,
+        Media::Audio::{PlaySoundW, SND_ASYNC},
+        System::LibraryLoader::GetModuleHandleW,
+        UI::{Shell::NOTIFYICONDATAW, WindowsAndMessaging::HHOOK},
+    },
 };
 
 pub struct ProgramData {
@@ -48,10 +53,18 @@ impl ProgramData {
     }
 
     pub fn change_status(&mut self) {
-        if self.status {
-            self.status = false
-        } else {
-            self.status = true
+        unsafe {
+            if self.status {
+                PlaySoundW(w!("SystemHand"), GetModuleHandleW(None).unwrap(), SND_ASYNC);
+                self.status = false
+            } else {
+                PlaySoundW(
+                    w!("SystemQuestion"),
+                    GetModuleHandleW(None).unwrap(),
+                    SND_ASYNC,
+                );
+                self.status = true
+            }
         }
     }
     pub fn get_status(&self) -> bool {

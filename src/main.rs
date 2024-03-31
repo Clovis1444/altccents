@@ -1,5 +1,5 @@
 // main.rs
-// #![cfg_attr(not(test), windows_subsystem = "windows")]
+#![cfg_attr(not(test), windows_subsystem = "windows")]
 
 mod config;
 mod hook;
