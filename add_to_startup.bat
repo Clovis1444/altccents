@@ -3,10 +3,10 @@ setlocal
 
 set "fileName=Altccents"
 
-if exist %fileName%.exe (
-    mklink "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\%fileName%" "%cd%\%fileName%.exe"
+if exist %~dp0%fileName%.exe (
+    mklink "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\%fileName%" "%~dp0%fileName%.exe"
 ) else (
-    echo File "%fileName%.exe" not found in "%cd%\".
+    echo File "%fileName%.exe" not found in "%~dp0".
 )
 
 endlocal
