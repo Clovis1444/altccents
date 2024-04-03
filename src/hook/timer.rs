@@ -1,6 +1,6 @@
 // timer.rs
 
-use super::super::{config::*, window};
+use super::super::{config::*, popup};
 use super::accent::{self, reset_input_state};
 use windows::Win32::{
     Foundation::HWND,
@@ -31,7 +31,7 @@ unsafe extern "system" fn timer_proc(_hwnd: HWND, _message: u32, timer_id: usize
             accent::send_accent_and_kill_timer();
 
             // Redraw popup
-            window::redraw();
+            popup::update_popup();
 
             reset_input_state();
         }

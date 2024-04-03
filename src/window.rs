@@ -128,14 +128,3 @@ extern "system" fn wndproc(
         }
     }
 }
-
-pub fn redraw() {
-    unsafe {
-        RedrawWindow(
-            PROGRAM_DATA.get_hwnd(),
-            None,
-            None,
-            RDW_INTERNALPAINT | RDW_INVALIDATE | RDW_ERASE,
-        );
-    }
-}

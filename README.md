@@ -44,7 +44,7 @@ You can also manage altccents by interacting with the **tray icon**.
 
 1. Download [Altccents](https://github.com/Clovis1444/altccents/releases/latest)
 2. Unzip **Altccents.zip** into any directory
-3. Execute **add_to_startup.bat** to add **Altccents.exe** to startup. Alternatively, create a shortcut to **altcents.exe** in "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\".
+3. Run **add_to_startup.bat** as administrator to add **Altccents.exe** to startup. Alternatively, create a shortcut to **altcents.exe** in "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\".
 
 ## Configuration
 

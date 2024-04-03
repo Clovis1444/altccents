@@ -1,11 +1,45 @@
 // popup.rs
 
-use windows::Win32::Foundation::COLORREF;
+use windows::Win32::Foundation::{COLORREF, HWND};
 use windows::Win32::{Foundation::RECT, Graphics::Gdi::*, UI::WindowsAndMessaging::*};
 
-use super::config::*;
-use super::hook::accent;
-use super::hook::data;
+use super::{
+    config::*,
+    hook::{accent, data},
+    session::PROGRAM_DATA,
+};
+
+pub fn update_popup() {
+    unsafe {
+        let key = match accent::get_input_state() {
+            Some((key, _)) => key,
+            None => {
+                ShowWindow(PROGRAM_DATA.get_hwnd(), SW_HIDE);
+                return;
+            }
+        };
+        let is_capital = accent::check_if_capital();
+
+        let pos = get_popup_rect(data::get_accent_chars(key, is_capital).len() as i32);
+
+        let _ = SetWindowPos(
+            PROGRAM_DATA.get_hwnd(),
+            HWND::default(),
+            pos.left,
+            pos.top,
+            pos.right,
+            pos.bottom,
+            SWP_SHOWWINDOW | SWP_NOREDRAW,
+        );
+
+        RedrawWindow(
+            PROGRAM_DATA.get_hwnd(),
+            None,
+            None,
+            RDW_INTERNALPAINT | RDW_INVALIDATE | RDW_ERASE,
+        );
+    }
+}
 
 pub fn draw(hdc: HDC) {
     unsafe {
@@ -13,6 +47,7 @@ pub fn draw(hdc: HDC) {
             Some((key, index)) => (key, index),
             None => return,
         };
+
         let is_capital = accent::check_if_capital();
 
         let mut u16_arr: Vec<u16> = vec![];
@@ -56,7 +91,12 @@ pub fn draw(hdc: HDC) {
         // Draw
         let len = u16_arr.len() as i32;
 
-        let popup_rect = get_popup_rect(len);
+        let popup_rect = RECT {
+            left: 0,
+            top: 0,
+            right: len * POPUP_CELL_SIZE,
+            bottom: POPUP_CELL_SIZE,
+        };
 
         // Cell loop
         let mut count: usize = 0;
