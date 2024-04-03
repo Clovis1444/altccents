@@ -62,7 +62,7 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                         || GetKeyState(VK_RSHIFT.0.into()) & 0x8000u16 as i16 != 0;
 
                     if win && shift {
-                        session::PROGRAM_DATA.change_status();
+                        session::PROGRAM_DATA.change_status(true);
                         // Redraw tray icon
                         tray::update_tray_icon(&mut PROGRAM_DATA);
                         break 'keydown;

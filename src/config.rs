@@ -10,6 +10,7 @@ use windows::{
 
 pub const CONTROL_KEY: VIRTUAL_KEY = VK_NUMLOCK;
 pub const USE_TIMER: bool = false;
+pub const USE_SOUND: bool = true;
 // In milliseconds
 pub const MAX_KEY_INTERVAL: u32 = 1000;
 pub const DEFAULT_PROGRAM_STATUS: bool = true;

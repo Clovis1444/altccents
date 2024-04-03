@@ -52,17 +52,21 @@ impl ProgramData {
             .expect("PROGRAM_DATA.tray_icon_data should be set at program start up")
     }
 
-    pub fn change_status(&mut self) {
+    pub fn change_status(&mut self, play_sound: bool) {
         unsafe {
             if self.status {
-                PlaySoundW(w!("SystemHand"), GetModuleHandleW(None).unwrap(), SND_ASYNC);
+                if play_sound && USE_SOUND {
+                    PlaySoundW(w!("SystemHand"), GetModuleHandleW(None).unwrap(), SND_ASYNC);
+                }
                 self.status = false
             } else {
-                PlaySoundW(
-                    w!("SystemQuestion"),
-                    GetModuleHandleW(None).unwrap(),
-                    SND_ASYNC,
-                );
+                if play_sound && USE_SOUND {
+                    PlaySoundW(
+                        w!("SystemQuestion"),
+                        GetModuleHandleW(None).unwrap(),
+                        SND_ASYNC,
+                    );
+                }
                 self.status = true
             }
         }

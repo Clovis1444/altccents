@@ -80,7 +80,7 @@ extern "system" fn wndproc(
             }
             TRAY_CALLBACK_MESSAGE => match l_param.0 as u32 {
                 WM_LBUTTONDOWN => {
-                    PROGRAM_DATA.change_status();
+                    PROGRAM_DATA.change_status(false);
                     tray::update_tray_icon(&mut PROGRAM_DATA);
                     LRESULT(0)
                 }
@@ -92,7 +92,7 @@ extern "system" fn wndproc(
             },
             WM_COMMAND => match w_param.0 as u32 {
                 SWITCH_PROGRAM_STATE_BUTTON_ID => {
-                    PROGRAM_DATA.change_status();
+                    PROGRAM_DATA.change_status(false);
                     tray::update_tray_icon(&mut PROGRAM_DATA);
                     LRESULT(0)
                 }
