@@ -89,6 +89,7 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                     || msg_vk == VK_CAPITAL
                     || msg_vk == VK_LSHIFT
                     || msg_vk == VK_RSHIFT
+                    || !control
                 {
                     break 'keydown;
                 }

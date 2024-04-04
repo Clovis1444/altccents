@@ -6,7 +6,7 @@
 
 ![Altccents screen](images/altccents_screen.png)
 
-**Altccents** is an utility that offers an alternative way to type accented characters. The utility is designed for **_qwerty_** keyboard layout and originally supports french accented characters.
+**Altccents** is an utility for Windows that offers an alternative way to type accented characters. The utility is designed for **_qwerty_** keyboard layout and originally supports french accented characters.
 
 There are several programs that perform a similar tasks. But none of them fully suit my specific needs. That project was inspired by [QuickAccent](https://aka.ms/PowerToysOverview_QuickAccent).
 
