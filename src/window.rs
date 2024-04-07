@@ -1,5 +1,7 @@
 // window.rs
 
+use mslnk::ShellLink;
+use std::path::Path;
 use windows::{
     core::*,
     Win32::{
@@ -46,8 +48,8 @@ pub fn create_window() -> Result<HWND> {
             WS_POPUP | WS_VISIBLE,
             0,
             0,
-            GetSystemMetrics(SM_CXSCREEN),
-            GetSystemMetrics(SM_CYSCREEN),
+            0,
+            0,
             None,
             None,
             instance,
@@ -109,6 +111,26 @@ extern "system" fn wndproc(
                 }
                 QUIT_BUTTON_ID => {
                     PostQuitMessage(0);
+                    LRESULT(0)
+                }
+                ADD_STARTUP_BUTTON_ID => {
+                    let target = std::env::current_exe().unwrap();
+                    let lnk = Path::new(&std::env::var("APPDATA").unwrap())
+                        .join("Microsoft/Windows/Start Menu/Programs/Startup")
+                        .join(PROGRAM_NAME.to_string().unwrap() + ".lnk");
+
+                    let sl = ShellLink::new(target).unwrap();
+                    sl.create_lnk(lnk).unwrap();
+
+                    LRESULT(0)
+                }
+                REMOVE_STARTUP_BUTTON_ID => {
+                    let lnk = Path::new(&std::env::var("APPDATA").unwrap())
+                        .join("Microsoft/Windows/Start Menu/Programs/Startup")
+                        .join(PROGRAM_NAME.to_string().unwrap() + ".lnk");
+
+                    std::fs::remove_file(lnk).unwrap();
+
                     LRESULT(0)
                 }
                 _ => DefWindowProcW(window, message, w_param, l_param),

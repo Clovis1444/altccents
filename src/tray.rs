@@ -4,7 +4,7 @@ use super::{
     config::*,
     session::{self, PROGRAM_DATA},
 };
-use std::mem::size_of;
+use std::{mem::size_of, path::Path};
 use windows::{
     core::{h, PCWSTR, PWSTR},
     Win32::{
@@ -104,27 +104,45 @@ pub fn context_menu(program_data: &session::ProgramData) {
             Err(_) => panic!("Failed to create popup menu"),
         };
 
-        let button1_text: PWSTR;
-        let button2_text: PWSTR;
+        let status_text: PWSTR;
+        let switch_button_text: PWSTR;
         {
             if PROGRAM_DATA.get_status() {
-                button1_text = PWSTR::from_raw(h!("Altccents is ON").as_ptr() as *mut u16);
-                button2_text = PWSTR::from_raw(h!("Turn off altccents").as_ptr() as *mut u16);
+                status_text = PWSTR::from_raw(h!("Altccents is ON").as_ptr() as *mut u16);
+                switch_button_text = PWSTR::from_raw(h!("Turn off altccents").as_ptr() as *mut u16);
             } else {
-                button1_text = PWSTR::from_raw(h!("Altccents is OFF").as_ptr() as *mut u16);
-                button2_text = PWSTR::from_raw(h!("Turn on altccents").as_ptr() as *mut u16);
+                status_text = PWSTR::from_raw(h!("Altccents is OFF").as_ptr() as *mut u16);
+                switch_button_text = PWSTR::from_raw(h!("Turn on altccents").as_ptr() as *mut u16);
             }
+        }
+        let startup_button_text: PWSTR;
+        let startup_button_id: u32;
+        {
+            let appdata = std::env::var("APPDATA").expect("Env variable %APPDATA% must exist");
+            // Path to Altccents link in startup folder
+            let link_path = Path::new(&appdata)
+                .join("Microsoft/Windows/Start Menu/Programs/Startup")
+                .join(PROGRAM_NAME.to_string().unwrap() + ".lnk");
+
+            if link_path.exists() {
+                startup_button_text =
+                    PWSTR::from_raw(h!("Remove from startup").as_ptr() as *mut u16);
+                startup_button_id = REMOVE_STARTUP_BUTTON_ID;
+            } else {
+                startup_button_text = PWSTR::from_raw(h!("Add to startup").as_ptr() as *mut u16);
+                startup_button_id = ADD_STARTUP_BUTTON_ID;
+            };
         }
 
         // Program status text
-        let button1 = MENUITEMINFOW {
+        let status = MENUITEMINFOW {
             cbSize: size_of::<MENUITEMINFOW>() as u32,
             fMask: MIIM_STRING | MIIM_STATE,
             fState: MFS_GRAYED | MFS_DEFAULT,
-            dwTypeData: button1_text,
+            dwTypeData: status_text,
             ..Default::default()
         };
-        match InsertMenuItemW(menu, 1, true, &button1) {
+        match InsertMenuItemW(menu, 1, true, &status) {
             Ok(_) => (),
             Err(_) => panic!("Failed to insert menu item"),
         };
@@ -142,40 +160,54 @@ pub fn context_menu(program_data: &session::ProgramData) {
         };
 
         // Turn on/off button
-        let button2 = MENUITEMINFOW {
+        let switch_button = MENUITEMINFOW {
             cbSize: size_of::<MENUITEMINFOW>() as u32,
             fMask: MIIM_STRING | MIIM_ID,
             wID: SWITCH_PROGRAM_STATE_BUTTON_ID,
-            dwTypeData: button2_text,
+            dwTypeData: switch_button_text,
             ..Default::default()
         };
-        match InsertMenuItemW(menu, 3, true, &button2) {
+        match InsertMenuItemW(menu, 3, true, &switch_button) {
+            Ok(_) => (),
+            Err(_) => panic!("Failed to insert menu item"),
+        };
+
+        // Startup button
+        let startup_button = MENUITEMINFOW {
+            cbSize: size_of::<MENUITEMINFOW>() as u32,
+            fMask: MIIM_STRING | MIIM_ID,
+            wID: startup_button_id,
+            dwTypeData: startup_button_text,
+            fState: MFS_HILITE,
+            ..Default::default()
+        };
+        match InsertMenuItemW(menu, 4, true, &startup_button) {
             Ok(_) => (),
             Err(_) => panic!("Failed to insert menu item"),
         };
 
         // About button
-        let button3 = MENUITEMINFOW {
+        let button4 = MENUITEMINFOW {
             cbSize: size_of::<MENUITEMINFOW>() as u32,
             fMask: MIIM_STRING | MIIM_ID,
             wID: ABOUT_BUTTON_ID,
             dwTypeData: PWSTR::from_raw(h!("About").as_ptr() as *mut u16),
             ..Default::default()
         };
-        match InsertMenuItemW(menu, 4, true, &button3) {
+        match InsertMenuItemW(menu, 5, true, &button4) {
             Ok(_) => (),
             Err(_) => panic!("Failed to insert menu item"),
         };
 
         // Quit button
-        let button3 = MENUITEMINFOW {
+        let button5 = MENUITEMINFOW {
             cbSize: size_of::<MENUITEMINFOW>() as u32,
             fMask: MIIM_STRING | MIIM_ID,
             wID: QUIT_BUTTON_ID,
             dwTypeData: PWSTR::from_raw(h!("Quit").as_ptr() as *mut u16),
             ..Default::default()
         };
-        match InsertMenuItemW(menu, 5, true, &button3) {
+        match InsertMenuItemW(menu, 6, true, &button5) {
             Ok(_) => (),
             Err(_) => panic!("Failed to insert menu item"),
         };

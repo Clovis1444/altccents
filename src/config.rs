@@ -21,7 +21,7 @@ pub const PROGRAM_SITE: PCWSTR = w!("https://github.com/Clovis1444/altccents");
 pub const PROGRAM_ICON_IMG: PCWSTR = w!("PROGRAM_ICON");
 // Font name; not .ttf file name
 pub const POPUP_FONT: PCWSTR = w!("Inter");
-pub const POPUP_FONT_SIZE: i32 = 28;
+pub const POPUP_FONT_SIZE: i32 = 40;
 pub const POPUP_FONT_COLOR: COLORREF = COLORREF { 0: 0x00E0E7E9 }; // Platinum
 pub const POPUP_WINDOW_TRANSPARENT_COLOR: COLORREF = COLORREF { 0: 0x00000000 }; // black
 pub const POPUP_WINDOW_TRANSPARENCY: u8 = 255;
@@ -46,3 +46,5 @@ pub const TRAY_CALLBACK_MESSAGE: u32 = 33333;
 pub const SWITCH_PROGRAM_STATE_BUTTON_ID: u32 = 100;
 pub const QUIT_BUTTON_ID: u32 = 101;
 pub const ABOUT_BUTTON_ID: u32 = 102;
+pub const ADD_STARTUP_BUTTON_ID: u32 = 103;
+pub const REMOVE_STARTUP_BUTTON_ID: u32 = 104;

@@ -58,18 +58,18 @@ pub fn draw(hdc: HDC) {
         // Font
         let font: HFONT = CreateFontW(
             POPUP_FONT_SIZE,
-            POPUP_FONT_SIZE,
+            0,
             0,
             0,
             FW_NORMAL.0 as i32,
             0,
             0,
             0,
-            DEFAULT_CHARSET.0.into(),
-            OUT_DEFAULT_PRECIS.0.into(),
-            CLIP_DEFAULT_PRECIS.0.into(),
+            ANSI_CHARSET.0.into(),
+            OUT_TT_PRECIS.0.into(),
+            CLIP_EMBEDDED.0.into(),
             ANTIALIASED_QUALITY.0.into(),
-            (DEFAULT_PITCH.0 | FF_DONTCARE.0).into(),
+            (FIXED_PITCH.0 | FF_ROMAN.0).into(),
             POPUP_FONT,
         );
 
