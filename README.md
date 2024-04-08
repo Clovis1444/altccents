@@ -48,8 +48,36 @@ You can also manage altccents by interacting with the **tray icon**.
 
 ## Configuration
 
-Currently, Altccents does not support custom configuration. But you can change values of global variables in **_src/config.rs_** and build program by the following command:
+Currently, the program may be configured through **_command line options_**. You can pass the following argument to [**Altccents shortcut**](#installation):
 
-```
-cargo build --release
-```
+-   **controlKey<_key_>** - set **Accent control key**.
+
+    **_key_** must have one of the following values:
+
+    -   _144_ - NumLock
+    -   _145_ - ScrollLock
+    -   _123_ - F12
+
+    Example: **_controlKey144_**.
+
+-   **timer<_ms_>** - causes a letter to be printed if there is no input from the user within a **_ms_** milliseconds. **_ms_** is optional, if **_ms_** is not timer will be set to 1 second by default, otherwise timer will be set on **_ms_** milliseconds.
+
+    Example: **_timer3000_**.
+
+-   **noSound** - disable application sounds.
+-   **off** - application will start in **off** state.
+-   **fonSize<_size_>** - set popup window font size.
+
+    Example: **_fontSize30_**.
+
+-   **transp<_val_>** - set popup window transparancy. **_val_** must be in range [0..255], where 0 is fully transparent and 255 is opaque.
+
+    Example: **_transp230_**.
+
+-   **cellSize<_size_>** - set popup window cell size.
+
+    Example: **_cellSize40_**.
+
+-   **circle** - change selection figure to circle instead of rounded rectangle.
+
+**Note**: letter case does not matter in option names.

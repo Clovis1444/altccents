@@ -178,7 +178,6 @@ pub fn context_menu(program_data: &session::ProgramData) {
             fMask: MIIM_STRING | MIIM_ID,
             wID: startup_button_id,
             dwTypeData: startup_button_text,
-            fState: MFS_HILITE,
             ..Default::default()
         };
         match InsertMenuItemW(menu, 4, true, &startup_button) {

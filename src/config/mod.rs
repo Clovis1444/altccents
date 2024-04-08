@@ -1,10 +1,12 @@
 // config.rs
 
+mod args;
+
 use windows::{
     core::{w, PCWSTR},
     Win32::{
         Foundation::COLORREF,
-        UI::Input::KeyboardAndMouse::{VIRTUAL_KEY, VK_NUMLOCK},
+        UI::Input::KeyboardAndMouse::{VIRTUAL_KEY, VK_F12, VK_NUMLOCK, VK_SCROLL},
     },
 };
 
@@ -21,9 +23,10 @@ struct Settings {
     popup_circle_selection: bool,
 }
 impl Settings {
-    const POPUP_CELL_SIZE: i32 = 55;
+    const POPUP_CELL_SIZE: i32 = 50;
     const POPUP_SELECT_CELL_SCALE: f32 = 0.9;
     const POPUP_ROUND_FACTOR: i32 = 7;
+    const VALID_CONTROL_KEYS: [VIRTUAL_KEY; 3] = [VK_NUMLOCK, VK_SCROLL, VK_F12];
 }
 
 // Default settings
@@ -34,7 +37,7 @@ static mut SETTINGS: Settings = Settings {
     max_key_interval: 1000,
     use_sound: true,
     default_program_status: true,
-    popup_font_size: 40,
+    popup_font_size: 35,
     popup_window_transparency: 255,
     popup_cell_size: Settings::POPUP_CELL_SIZE,
     popup_circle_selection: false,
@@ -64,6 +67,16 @@ pub const QUIT_BUTTON_ID: u32 = 101;
 pub const ABOUT_BUTTON_ID: u32 = 102;
 pub const ADD_STARTUP_BUTTON_ID: u32 = 103;
 pub const REMOVE_STARTUP_BUTTON_ID: u32 = 104;
+
+pub fn init_settings() {
+    let mut args = std::env::args();
+    // Skip binary path arg
+    args.next();
+
+    for i in args {
+        args::validate_arg(&i);
+    }
+}
 
 macro_rules! apply_attr {
     { #!$attr:tt $($it:item)* } => {

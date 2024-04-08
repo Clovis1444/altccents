@@ -15,6 +15,7 @@ use windows::{core::*, Win32::UI::WindowsAndMessaging::*};
 
 fn main() -> Result<()> {
     unsafe {
+        config::init_settings();
         resources::init_resources();
 
         PROGRAM_DATA.set_status(DEFAULT_PROGRAM_STATUS());
