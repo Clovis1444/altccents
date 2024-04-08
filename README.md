@@ -43,7 +43,7 @@ You can also manage altccents by interacting with the **tray icon**.
 ## Installation
 
 1. Download [Altccents](https://github.com/Clovis1444/altccents/releases/latest)
-2. Unzip **Altccents.zip** into any directory
+2. Place **Altccents.exe** into any directory
 3. Run **Altccents.exe**, right-click on the application tray icon and select **_Add to startup_**. Alternatively, create a shortcut to **Altcents.exe** in "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\".
 
 ## Configuration

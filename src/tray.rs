@@ -30,7 +30,7 @@ pub fn init_tray_icon_data(program_data: &session::ProgramData) -> NOTIFYICONDAT
 
         let icon_img: PCWSTR;
         {
-            if DEFAULT_PROGRAM_STATUS {
+            if program_data.get_status() {
                 icon_img = TRAY_ICON_IMG_ON;
             } else {
                 icon_img = TRAY_ICON_IMG_OFF;

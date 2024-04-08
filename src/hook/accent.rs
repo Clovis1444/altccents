@@ -51,7 +51,7 @@ pub fn update_input_state(current_key: &VIRTUAL_KEY) {
         }
 
         // If current key is accent key -> set timer
-        if USE_TIMER {
+        if USE_TIMER() {
             set_timer(PROGRAM_DATA.get_hwnd());
         }
     }
@@ -112,7 +112,7 @@ pub fn send_accent_and_kill_timer() {
     unsafe {
         match get_input_state() {
             Some((key, index)) => {
-                if USE_TIMER {
+                if USE_TIMER() {
                     kill_timer(PROGRAM_DATA.get_hwnd(), TIMER_ID);
                 }
 

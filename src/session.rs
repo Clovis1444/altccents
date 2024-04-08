@@ -24,7 +24,7 @@ pub static mut PROGRAM_DATA: ProgramData = ProgramData {
     hwnd: None,
     hhook: None,
     tray_icon_data: None,
-    status: DEFAULT_PROGRAM_STATUS,
+    status: false,
 };
 
 impl ProgramData {
@@ -52,15 +52,18 @@ impl ProgramData {
             .expect("PROGRAM_DATA.tray_icon_data should be set at program start up")
     }
 
+    pub fn set_status(&mut self, status: bool) {
+        self.status = status;
+    }
     pub fn change_status(&mut self, play_sound: bool) {
         unsafe {
             if self.status {
-                if play_sound && USE_SOUND {
+                if play_sound && USE_SOUND() {
                     PlaySoundW(w!("SystemHand"), GetModuleHandleW(None).unwrap(), SND_ASYNC);
                 }
                 self.status = false
             } else {
-                if play_sound && USE_SOUND {
+                if play_sound && USE_SOUND() {
                     PlaySoundW(
                         w!("SystemQuestion"),
                         GetModuleHandleW(None).unwrap(),

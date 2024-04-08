@@ -9,7 +9,7 @@ use windows::Win32::{
 
 pub fn set_timer(hwnd: HWND) {
     unsafe {
-        match SetTimer(hwnd, TIMER_ID, MAX_KEY_INTERVAL, Some(timer_proc)) {
+        match SetTimer(hwnd, TIMER_ID, MAX_KEY_INTERVAL(), Some(timer_proc)) {
             0 => panic!("Failed to set timer."),
             _ => (),
         };

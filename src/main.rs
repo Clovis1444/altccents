@@ -9,12 +9,15 @@ mod session;
 mod tray;
 mod window;
 
+use config::DEFAULT_PROGRAM_STATUS;
 use session::PROGRAM_DATA;
 use windows::{core::*, Win32::UI::WindowsAndMessaging::*};
 
 fn main() -> Result<()> {
     unsafe {
         resources::init_resources();
+
+        PROGRAM_DATA.set_status(DEFAULT_PROGRAM_STATUS());
 
         match window::create_window() {
             Err(_) => panic!("Failed to create a window!"),

@@ -57,7 +57,7 @@ pub fn draw(hdc: HDC) {
 
         // Font
         let font: HFONT = CreateFontW(
-            POPUP_FONT_SIZE,
+            POPUP_FONT_SIZE(),
             0,
             0,
             0,
@@ -94,17 +94,17 @@ pub fn draw(hdc: HDC) {
         let popup_rect = RECT {
             left: 0,
             top: 0,
-            right: len * POPUP_CELL_SIZE,
-            bottom: POPUP_CELL_SIZE,
+            right: len * POPUP_CELL_SIZE(),
+            bottom: POPUP_CELL_SIZE(),
         };
 
         // Cell loop
         let mut count: usize = 0;
         while count < len as usize {
             let mut text_rect = RECT {
-                left: popup_rect.left + (count as i32) * POPUP_CELL_SIZE,
+                left: popup_rect.left + (count as i32) * POPUP_CELL_SIZE(),
                 top: popup_rect.top,
-                right: popup_rect.left + POPUP_CELL_SIZE + (count as i32) * POPUP_CELL_SIZE,
+                right: popup_rect.left + POPUP_CELL_SIZE() + (count as i32) * POPUP_CELL_SIZE(),
                 bottom: popup_rect.bottom,
             };
 
@@ -120,14 +120,14 @@ pub fn draw(hdc: HDC) {
                     // TODO: fix it
                     // RoundRect() steals 1 pixel(But why...). Change value by 1 to fix it
                     text_rect.bottom + 1,
-                    POPUP_CELL_ROUND,
-                    POPUP_CELL_ROUND,
+                    POPUP_CELL_ROUND(),
+                    POPUP_CELL_ROUND(),
                 );
 
                 // Fill inner roundings
                 if len != 1 && count == 0 {
                     let temp_rect = RECT {
-                        left: text_rect.left + POPUP_CELL_SIZE / 2,
+                        left: text_rect.left + POPUP_CELL_SIZE() / 2,
                         top: text_rect.top,
                         right: text_rect.right,
                         bottom: text_rect.bottom,
@@ -138,7 +138,7 @@ pub fn draw(hdc: HDC) {
                     let temp_rect = RECT {
                         left: text_rect.left,
                         top: text_rect.top,
-                        right: text_rect.right - POPUP_CELL_SIZE / 2,
+                        right: text_rect.right - POPUP_CELL_SIZE() / 2,
                         bottom: text_rect.bottom,
                     };
                     FillRect(hdc, &temp_rect, cell_brush);
@@ -155,8 +155,8 @@ pub fn draw(hdc: HDC) {
             if count == index {
                 let old_brush = SelectObject(hdc, select_cell_brush);
 
-                let margin = POPUP_CELL_SIZE - POPUP_SELECT_CELL_SIZE;
-                if POPUP_CIRCLE_SELECTION {
+                let margin = POPUP_CELL_SIZE() - POPUP_SELECT_CELL_SIZE();
+                if POPUP_CIRCLE_SELECTION() {
                     Ellipse(
                         hdc,
                         text_rect.left + margin,
@@ -178,8 +178,8 @@ pub fn draw(hdc: HDC) {
                         select_rect.top,
                         select_rect.right,
                         select_rect.bottom,
-                        POPUP_SELECT_CELL_ROUND,
-                        POPUP_SELECT_CELL_ROUND,
+                        POPUP_SELECT_CELL_ROUND(),
+                        POPUP_SELECT_CELL_ROUND(),
                     );
                 }
 
@@ -218,18 +218,18 @@ fn get_popup_rect(cell_amount: i32) -> RECT {
 
         // 90% of height
         let bottom = height - height / 10;
-        let top = bottom - POPUP_CELL_SIZE;
+        let top = bottom - POPUP_CELL_SIZE();
         let left: i32;
         let right: i32;
 
         if cell_amount % 2 == 0 {
             let center = width / 2;
-            left = center - cell_amount / 2 * POPUP_CELL_SIZE;
-            right = center + cell_amount / 2 * POPUP_CELL_SIZE;
+            left = center - cell_amount / 2 * POPUP_CELL_SIZE();
+            right = center + cell_amount / 2 * POPUP_CELL_SIZE();
         } else {
             let center = width / 2;
-            left = center - POPUP_CELL_SIZE / 2 - cell_amount / 2 * POPUP_CELL_SIZE;
-            right = center + POPUP_CELL_SIZE / 2 + cell_amount / 2 * POPUP_CELL_SIZE;
+            left = center - POPUP_CELL_SIZE() / 2 - cell_amount / 2 * POPUP_CELL_SIZE();
+            right = center + POPUP_CELL_SIZE() / 2 + cell_amount / 2 * POPUP_CELL_SIZE();
         }
 
         RECT {

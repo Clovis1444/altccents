@@ -51,10 +51,10 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                     0: msg.vkCode as u16,
                 };
 
-                let control = GetKeyState(CONTROL_KEY.0.into()) & 0x8000u16 as i16 != 0;
+                let control = GetKeyState(CONTROL_KEY().0.into()) & 0x8000u16 as i16 != 0;
 
                 // If win + shift + control_key -> change program state and break
-                if msg_vk == CONTROL_KEY {
+                if msg_vk == CONTROL_KEY() {
                     let win = GetKeyState(VK_LWIN.0.into()) & 0x8000u16 as i16 != 0
                         || GetKeyState(VK_RWIN.0.into()) & 0x8000u16 as i16 != 0;
 
@@ -131,7 +131,7 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                 };
 
                 match msg_vk {
-                    CONTROL_KEY => {
+                    x if x == CONTROL_KEY() => {
                         accent::send_accent_and_kill_timer();
 
                         accent::reset_input_state();
@@ -141,7 +141,7 @@ unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) 
                     }
                     // Redraw popup if shift was released and CONTROL_KEY is pressed
                     VK_LSHIFT | VK_RSHIFT => {
-                        let control = GetKeyState(CONTROL_KEY.0.into()) & 0x8000u16 as i16 != 0;
+                        let control = GetKeyState(CONTROL_KEY().0.into()) & 0x8000u16 as i16 != 0;
                         if control {
                             popup::update_popup();
                         }

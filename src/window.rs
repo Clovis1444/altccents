@@ -59,7 +59,7 @@ pub fn create_window() -> Result<HWND> {
         let _ = SetLayeredWindowAttributes(
             hwnd,
             POPUP_WINDOW_TRANSPARENT_COLOR,
-            POPUP_WINDOW_TRANSPARENCY,
+            POPUP_WINDOW_TRANSPARENCY(),
             LWA_ALPHA | LWA_COLORKEY,
         );
 
