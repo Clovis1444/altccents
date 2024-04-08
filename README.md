@@ -48,7 +48,7 @@ You can also manage altccents by interacting with the **tray icon**.
 
 ## Configuration
 
-Currently, the program may be configured through **_command line options_**. You can pass the following argument to [**Altccents shortcut**](#installation):
+Currently, the program may be configured through **_command line options_**. You can pass any combination of the following arguments to [**Altccents shortcut**](#installation):
 
 -   **controlKey<_key_>** - set **Accent control key**.
 
@@ -66,7 +66,7 @@ Currently, the program may be configured through **_command line options_**. You
 
 -   **noSound** - disable application sounds.
 -   **off** - application will start in **off** state.
--   **fonSize<_size_>** - set popup window font size.
+-   **fontSize<_size_>** - set popup window font size.
 
     Example: **_fontSize30_**.
 
