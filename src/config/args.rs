@@ -39,6 +39,7 @@ const SETTING_ARG_LIST: [SettingArg; 8] = [
         name: "circle",
         function: arg_circle,
     },
+    // TODO: add "round", "selectscale"; "nosound"/"off"/"circle" oposites
     // Insert new arg here
 ];
 

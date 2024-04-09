@@ -185,28 +185,54 @@ pub fn context_menu(program_data: &session::ProgramData) {
             Err(_) => panic!("Failed to insert menu item"),
         };
 
+        // Settings button
+        let settings_button = MENUITEMINFOW {
+            cbSize: size_of::<MENUITEMINFOW>() as u32,
+            fMask: MIIM_STRING | MIIM_ID,
+            wID: SET_SETTINGS_BUTTON_ID,
+            dwTypeData: PWSTR::from_raw(h!("Set settings from clipboard").as_ptr() as *mut u16),
+            ..Default::default()
+        };
+        match InsertMenuItemW(menu, 5, true, &settings_button) {
+            Ok(_) => (),
+            Err(_) => panic!("Failed to insert menu item"),
+        };
+
+        // Reset settings button
+        let reset_settings_button = MENUITEMINFOW {
+            cbSize: size_of::<MENUITEMINFOW>() as u32,
+            fMask: MIIM_STRING | MIIM_ID,
+            wID: RESET_SETTINGS_BUTTON_ID,
+            dwTypeData: PWSTR::from_raw(h!("Reset settings to default").as_ptr() as *mut u16),
+            ..Default::default()
+        };
+        match InsertMenuItemW(menu, 6, true, &reset_settings_button) {
+            Ok(_) => (),
+            Err(_) => panic!("Failed to insert menu item"),
+        };
+
         // About button
-        let button4 = MENUITEMINFOW {
+        let about_button = MENUITEMINFOW {
             cbSize: size_of::<MENUITEMINFOW>() as u32,
             fMask: MIIM_STRING | MIIM_ID,
             wID: ABOUT_BUTTON_ID,
             dwTypeData: PWSTR::from_raw(h!("About").as_ptr() as *mut u16),
             ..Default::default()
         };
-        match InsertMenuItemW(menu, 5, true, &button4) {
+        match InsertMenuItemW(menu, 7, true, &about_button) {
             Ok(_) => (),
             Err(_) => panic!("Failed to insert menu item"),
         };
 
         // Quit button
-        let button5 = MENUITEMINFOW {
+        let quit_button = MENUITEMINFOW {
             cbSize: size_of::<MENUITEMINFOW>() as u32,
             fMask: MIIM_STRING | MIIM_ID,
             wID: QUIT_BUTTON_ID,
             dwTypeData: PWSTR::from_raw(h!("Quit").as_ptr() as *mut u16),
             ..Default::default()
         };
-        match InsertMenuItemW(menu, 6, true, &button5) {
+        match InsertMenuItemW(menu, 8, true, &quit_button) {
             Ok(_) => (),
             Err(_) => panic!("Failed to insert menu item"),
         };

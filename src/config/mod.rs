@@ -21,15 +21,34 @@ struct Settings {
     popup_window_transparency: u8,
     popup_cell_size: i32,
     popup_circle_selection: bool,
+    popup_select_cell_scale: f32,
+    popup_round_factor: i32,
 }
 impl Settings {
-    const POPUP_CELL_SIZE: i32 = 50;
-    const POPUP_SELECT_CELL_SCALE: f32 = 0.9;
-    const POPUP_ROUND_FACTOR: i32 = 7;
     const VALID_CONTROL_KEYS: [VIRTUAL_KEY; 3] = [VK_NUMLOCK, VK_SCROLL, VK_F12];
 }
 
 // Default settings
+impl Default for Settings {
+    fn default() -> Settings {
+        Settings {
+            control_key: VK_NUMLOCK,
+            use_timer: false,
+            // In milliseconds
+            max_key_interval: 1000,
+            use_sound: true,
+            default_program_status: true,
+            popup_font_size: 35,
+            popup_window_transparency: 255,
+            popup_cell_size: 50,
+            popup_circle_selection: false,
+            popup_select_cell_scale: 0.9,
+            // Set popup_round_factor to "1" for max rounding
+            popup_round_factor: 7,
+        }
+    }
+}
+
 static mut SETTINGS: Settings = Settings {
     control_key: VK_NUMLOCK,
     use_timer: false,
@@ -39,8 +58,11 @@ static mut SETTINGS: Settings = Settings {
     default_program_status: true,
     popup_font_size: 35,
     popup_window_transparency: 255,
-    popup_cell_size: Settings::POPUP_CELL_SIZE,
+    popup_cell_size: 50,
     popup_circle_selection: false,
+    popup_select_cell_scale: 0.9,
+    // Set popup_round_factor to "1" for max rounding
+    popup_round_factor: 7,
 };
 
 pub const PROGRAM_NAME: PCWSTR = w!("Altccents");
@@ -67,14 +89,44 @@ pub const QUIT_BUTTON_ID: u32 = 101;
 pub const ABOUT_BUTTON_ID: u32 = 102;
 pub const ADD_STARTUP_BUTTON_ID: u32 = 103;
 pub const REMOVE_STARTUP_BUTTON_ID: u32 = 104;
+pub const SET_SETTINGS_BUTTON_ID: u32 = 105;
+pub const RESET_SETTINGS_BUTTON_ID: u32 = 106;
 
 pub fn init_settings() {
     let mut args = std::env::args();
     // Skip binary path arg
     args.next();
 
+    let mut options = String::new();
     for i in args {
         args::validate_arg(&i);
+        options.push_str(&i);
+        options.push(' ');
+    }
+
+    unsafe {
+        super::session::PROGRAM_DATA.set_settings_options(Some(options));
+    }
+}
+
+pub fn change_settings(options: Vec<&str>) {
+    let mut opts = String::new();
+    for i in options {
+        args::validate_arg(i);
+        opts.push_str(i);
+        opts.push(' ');
+    }
+
+    // Update session options
+    unsafe { super::session::PROGRAM_DATA.set_settings_options(Some(opts)) };
+}
+
+pub fn reset_settings() {
+    unsafe {
+        SETTINGS = Settings::default();
+
+        // Update session options
+        super::session::PROGRAM_DATA.set_settings_options(None);
     }
 }
 
@@ -119,14 +171,14 @@ pub fn POPUP_CIRCLE_SELECTION() -> bool {
 }
 pub fn POPUP_SELECT_CELL_SIZE() -> i32{
     unsafe{
-        (SETTINGS.popup_cell_size as f32 * Settings::POPUP_SELECT_CELL_SCALE) as i32
+        (SETTINGS.popup_cell_size as f32 * SETTINGS.popup_select_cell_scale) as i32
     }
 }
-// Set POPUP_ROUND_FACTOR to "1" for max rounding
 pub fn POPUP_CELL_ROUND() -> i32 {
-    unsafe {SETTINGS.popup_cell_size / Settings::POPUP_ROUND_FACTOR}
+    unsafe {SETTINGS.popup_cell_size / SETTINGS.popup_round_factor}
 }
 pub fn POPUP_SELECT_CELL_ROUND() -> i32{
-        POPUP_SELECT_CELL_SIZE() / Settings::POPUP_ROUND_FACTOR
+       unsafe{ POPUP_SELECT_CELL_SIZE() / SETTINGS.popup_round_factor}
 }
+
 }

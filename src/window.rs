@@ -7,7 +7,10 @@ use windows::{
     Win32::{
         Foundation::*,
         Graphics::Gdi::*,
-        System::LibraryLoader::*,
+        System::{
+            DataExchange::{CloseClipboard, GetClipboardData, OpenClipboard},
+            LibraryLoader::*,
+        },
         UI::{Shell::ShellExecuteW, WindowsAndMessaging::*},
     },
 };
@@ -119,7 +122,8 @@ extern "system" fn wndproc(
                         .join("Microsoft/Windows/Start Menu/Programs/Startup")
                         .join(PROGRAM_NAME.to_string().unwrap() + ".lnk");
 
-                    let sl = ShellLink::new(target).unwrap();
+                    let mut sl = ShellLink::new(target).unwrap();
+                    sl.set_arguments(PROGRAM_DATA.get_settings_options());
                     sl.create_lnk(lnk).unwrap();
 
                     LRESULT(0)
@@ -131,6 +135,40 @@ extern "system" fn wndproc(
 
                     std::fs::remove_file(lnk).unwrap();
 
+                    LRESULT(0)
+                }
+                SET_SETTINGS_BUTTON_ID => {
+                    if let Ok(_) = OpenClipboard(PROGRAM_DATA.get_hwnd()) {
+                        let handle = match GetClipboardData(1) {
+                            Ok(val) => val,
+                            Err(_) => return LRESULT(0),
+                        };
+
+                        // Get entire clipboard string
+                        let mut ptr: *const u8 = std::mem::transmute(handle);
+                        let mut clipboard = String::new();
+                        loop {
+                            if *ptr as char == '\0' {
+                                break;
+                            }
+
+                            clipboard.push(*ptr as char);
+                            ptr = ptr.wrapping_add(1);
+                        }
+
+                        let _ = CloseClipboard();
+
+                        // Split string using ' ' as separator
+                        let options: Vec<&str> = clipboard.split(' ').collect();
+
+                        // Change current session settings
+                        change_settings(options);
+                    }
+
+                    LRESULT(0)
+                }
+                RESET_SETTINGS_BUTTON_ID => {
+                    reset_settings();
                     LRESULT(0)
                 }
                 _ => DefWindowProcW(window, message, w_param, l_param),
