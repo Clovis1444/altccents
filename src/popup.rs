@@ -29,7 +29,7 @@ pub fn update_popup() {
             pos.top,
             pos.right,
             pos.bottom,
-            SWP_SHOWWINDOW | SWP_NOREDRAW,
+            SWP_SHOWWINDOW | SWP_NOREDRAW | SWP_NOACTIVATE,
         );
 
         RedrawWindow(
