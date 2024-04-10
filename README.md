@@ -72,8 +72,11 @@ You can also pass any combination of setting options to [**Altccents shortcut**]
 
     Example: **_timer3000_**.
 
+-   **noTimer** - disable timer.
 -   **noSound** - disable application sounds.
--   **off** - application will start in **off** state.
+-   **sound** - enable application sounds.
+-   **disable** - application will start in **disabled** state.
+-   **enable** - application will start in **enabled** state.
 -   **fontSize<_size_>** - set popup window font size.
 
     Example: **_fontSize30_**.
@@ -86,6 +89,15 @@ You can also pass any combination of setting options to [**Altccents shortcut**]
 
     Example: **_cellSize40_**.
 
--   **circle** - change selection figure to circle instead of rounded rectangle.
+-   **round<_factor_>** - set popup _cell rounding factor_. Default **_factor_** is _7_. Use **_round1_** for max rounding and enabling **circle selection**.
+
+    Example: **_round4_**.
+
+-   **selectScale<_factor_>** - set popup _select cell_ scale factor. Default **_factor_** is _0.9_; use **_selectScale1_** to disable scaling.
+
+    Example: **_selectScale0.8_**.
+
+-   **circleSelect** - change popup selection figure to circle instead of rounded rectangle.
+-   **rectSelect** - change popup selection figure to rounded rectangle.
 
 **Note**: letter case does not matter in option names.
