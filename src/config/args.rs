@@ -63,8 +63,8 @@ const SETTING_ARG_LIST: [SettingArg; 14] = [
         name: "round",
         function: arg_round,
     },
-    // TODO: add "round", "selectscale"; "nosound"/"off"/"circle"/"notimer" oposites
-    // Add readme entries
+    // TODO: fix "transp"
+    // TODO: DPI scale
     // Insert new arg here
 ];
 

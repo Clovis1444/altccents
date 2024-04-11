@@ -44,7 +44,7 @@ You can also manage altccents by interacting with the **tray icon**.
 
 1. Download [Altccents](https://github.com/Clovis1444/altccents/releases/latest)
 2. Place **altccents.exe** into any directory
-3. Run **altccents.exe**, right-click on the application tray icon and select **_Add to startup_**. Alternatively, create a shortcut to **altcents.exe** in "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\".
+3. Run **altccents.exe**, right-click on the application tray icon and select **_Add to startup_**. Alternatively, create a shortcut to **altcents.exe** in `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\`.
 
 ## Configuration
 
@@ -58,7 +58,7 @@ You can also pass any combination of setting options to [**Altccents shortcut**]
 
 ### Here is the list of all available **setting options**:
 
--   **controlKey<_key_>** - set **Accent control key**.
+-   `controlKey<key>` - set **Accent control key**.
 
     **_key_** must have one of the following values:
 
@@ -68,36 +68,36 @@ You can also pass any combination of setting options to [**Altccents shortcut**]
 
     Example: **_controlKey144_**.
 
--   **timer<_ms_>** - causes a letter to be printed if there is no input from the user within a **_ms_** milliseconds. **_ms_** is optional, if **_ms_** is not timer will be set to 1 second by default, otherwise timer will be set on **_ms_** milliseconds.
+-   `timer<ms>` - causes a letter to be printed if there is no input from the user within a **_ms_** milliseconds. **_ms_** is optional, if **_ms_** is not timer will be set to 1 second by default, otherwise timer will be set on **_ms_** milliseconds.
 
     Example: **_timer3000_**.
 
--   **noTimer** - disable timer.
--   **noSound** - disable application sounds.
--   **sound** - enable application sounds.
--   **disable** - application will start in **disabled** state.
--   **enable** - application will start in **enabled** state.
--   **fontSize<_size_>** - set popup window font size.
+-   `noTimer` - disable timer.
+-   `noSound` - disable application sounds.
+-   `sound` - enable application sounds.
+-   `disable` - application will start in **disabled** state.
+-   `enable` - application will start in **enabled** state.
+-   `fontSize<size>` - set popup window font size.
 
     Example: **_fontSize30_**.
 
--   **transp<_val_>** - set popup window transparancy. **_val_** must be in range [0..255], where 0 is fully transparent and 255 is opaque.
+-   `transp<val>` - set popup window transparancy, this setting only applies on startup. **_val_** must be in range [0..255], where 0 is fully transparent and 255 is opaque.
 
     Example: **_transp230_**.
 
--   **cellSize<_size_>** - set popup window cell size.
+-   `cellSize<size>` - set popup window cell size.
 
     Example: **_cellSize40_**.
 
--   **round<_factor_>** - set popup _cell rounding factor_. Default **_factor_** is _7_. Use **_round1_** for max rounding and enabling **circle selection**.
+-   `round<factor>` - set popup _cell rounding factor_. Default **_factor_** is _7_. Use **_round1_** for max rounding and enabling **circle selection**.
 
     Example: **_round4_**.
 
--   **selectScale<_factor_>** - set popup _select cell_ scale factor. Default **_factor_** is _0.9_; use **_selectScale1_** to disable scaling.
+-   `selectScale<factor>` - set popup _select cell_ scale factor. Default **_factor_** is _0.9_; use **_selectScale1_** to disable scaling.
 
     Example: **_selectScale0.8_**.
 
--   **circleSelect** - change popup selection figure to circle instead of rounded rectangle.
--   **rectSelect** - change popup selection figure to rounded rectangle.
+-   `circleSelect` - change popup selection figure to circle instead of rounded rectangle.
+-   `rectSelect` - change popup selection figure to rounded rectangle.
 
-**Note**: letter case does not matter in option names.
+> **Note**: letter case does not matter in option names.
