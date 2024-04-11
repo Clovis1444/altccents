@@ -37,6 +37,10 @@ impl ProgramData {
         self.hwnd
             .expect("PROGRAM_DATA.hwnd should be set at program start up")
     }
+    // Used only once, bad thing
+    pub fn get_hwnd_option(&self) -> Option<HWND> {
+        self.hwnd
+    }
 
     pub fn set_hhook(&mut self, hhook: HHOOK) {
         self.hhook = Some(hhook)

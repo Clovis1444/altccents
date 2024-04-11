@@ -127,6 +127,18 @@ pub fn reset_settings() {
 
         // Update session options
         super::session::PROGRAM_DATA.set_settings_options(None);
+
+        // Update transparancy
+        use super::session::PROGRAM_DATA;
+        use windows::Win32::UI::WindowsAndMessaging::{
+            SetLayeredWindowAttributes, LWA_ALPHA, LWA_COLORKEY,
+        };
+        let _ = SetLayeredWindowAttributes(
+            PROGRAM_DATA.get_hwnd(),
+            POPUP_WINDOW_TRANSPARENT_COLOR,
+            POPUP_WINDOW_TRANSPARENCY(),
+            LWA_ALPHA | LWA_COLORKEY,
+        );
     }
 }
 

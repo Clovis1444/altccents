@@ -81,7 +81,7 @@ You can also pass any combination of setting options to [**Altccents shortcut**]
 
     Example: **_fontSize30_**.
 
--   `transp<val>` - set popup window transparancy, this setting only applies on startup. **_val_** must be in range [0..255], where 0 is fully transparent and 255 is opaque.
+-   `transp<val>` - set popup window transparancy. **_val_** must be in range [0..255], where 0 is fully transparent and 255 is opaque.
 
     Example: **_transp230_**.
 

@@ -63,7 +63,7 @@ const SETTING_ARG_LIST: [SettingArg; 14] = [
         name: "round",
         function: arg_round,
     },
-    // TODO: fix "transp"
+    // TODO: Docs
     // TODO: DPI scale
     // Insert new arg here
 ];
@@ -151,6 +151,20 @@ fn arg_transp(arg: &str, name: &str) {
                 };
 
                 super::SETTINGS.popup_window_transparency = transp;
+
+                use super::{super::session::PROGRAM_DATA, *};
+                use windows::Win32::UI::WindowsAndMessaging::{
+                    SetLayeredWindowAttributes, LWA_ALPHA, LWA_COLORKEY,
+                };
+
+                if let Some(hwnd) = PROGRAM_DATA.get_hwnd_option() {
+                    let _ = SetLayeredWindowAttributes(
+                        hwnd,
+                        POPUP_WINDOW_TRANSPARENT_COLOR,
+                        POPUP_WINDOW_TRANSPARENCY(),
+                        LWA_ALPHA | LWA_COLORKEY,
+                    );
+                }
             }
             None => (),
         };
