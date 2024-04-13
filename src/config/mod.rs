@@ -38,9 +38,9 @@ impl Default for Settings {
             max_key_interval: 1000,
             use_sound: true,
             default_program_status: true,
-            popup_font_size: 35,
+            popup_font_size: 50,
             popup_window_transparency: 255,
-            popup_cell_size: 50,
+            popup_cell_size: 70,
             popup_circle_selection: false,
             popup_select_cell_scale: 0.9,
             // Set popup_round_factor to "1" for max rounding
@@ -56,9 +56,9 @@ static mut SETTINGS: Settings = Settings {
     max_key_interval: 1000,
     use_sound: true,
     default_program_status: true,
-    popup_font_size: 35,
+    popup_font_size: 50,
     popup_window_transparency: 255,
-    popup_cell_size: 50,
+    popup_cell_size: 70,
     popup_circle_selection: false,
     popup_select_cell_scale: 0.9,
     // Set popup_round_factor to "1" for max rounding

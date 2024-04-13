@@ -101,3 +101,9 @@ You can also pass any combination of setting options to [**Altccents shortcut**]
 -   `rectSelect` - change popup selection figure to rounded rectangle.
 
 > **Note**: letter case does not matter in option names.
+
+> These parameters are equivalent to the default settings:
+>
+> ```
+> controlKey144 noTimer sound enable transp255 fontSize50 cellSize70 round7 > selectScale0.9 rectSelect
+> ```
