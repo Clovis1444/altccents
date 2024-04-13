@@ -1,4 +1,5 @@
-// popup.rs
+//! # popup
+//! `popup.rs` module is responsible for rendering the popup window.
 
 use windows::Win32::Foundation::{COLORREF, HWND};
 use windows::Win32::{Foundation::RECT, Graphics::Gdi::*, UI::WindowsAndMessaging::*};
@@ -9,6 +10,7 @@ use super::{
     session::PROGRAM_DATA,
 };
 
+/// This function will resize  popup window and send message to redraw popup if `hook::accent::get_input_state()` returns Some.
 pub fn update_popup() {
     unsafe {
         let key = match accent::get_input_state() {
@@ -41,6 +43,7 @@ pub fn update_popup() {
     }
 }
 
+/// Function that handles all popup drawing logic.
 pub fn draw(hdc: HDC) {
     unsafe {
         let (key, index) = match accent::get_input_state() {
@@ -210,6 +213,7 @@ pub fn draw(hdc: HDC) {
     }
 }
 
+/// Returns popup position on display.
 fn get_popup_rect(cell_amount: i32) -> RECT {
     unsafe {
         // Get main monitor resolution
@@ -241,6 +245,7 @@ fn get_popup_rect(cell_amount: i32) -> RECT {
     }
 }
 
+/// Use this function to add colors to drawing palette.
 fn get_palette() -> HPALETTE {
     unsafe {
         let cell = RGB::from_colorref(POPUP_CELL_COLOR);

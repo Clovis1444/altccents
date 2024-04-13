@@ -1,4 +1,5 @@
-// hook.rs
+//! # hook
+//! `hook.rs` responsible for everything related to the keyboard hook. Keyboard hook is used to track key presses, canceling keystrokes and sending accent characters.
 
 pub mod accent;
 pub mod data;
@@ -13,7 +14,7 @@ use windows::Win32::{
     UI::{Input::KeyboardAndMouse::*, WindowsAndMessaging::*},
 };
 
-// Install hook
+/// Installs low level keyboard hook. The hook must be installed when the program starts.
 pub fn setup_hook() -> HHOOK {
     unsafe {
         let hook = SetWindowsHookExW(WH_KEYBOARD_LL, Some(callback), None, 0);
@@ -28,7 +29,7 @@ pub fn setup_hook() -> HHOOK {
     }
 }
 
-// Uninstall hook
+/// Uninstalls hook when ther program ends.
 pub fn remove_hook(hook: HHOOK) {
     unsafe {
         let result = UnhookWindowsHookEx(hook);
@@ -40,7 +41,7 @@ pub fn remove_hook(hook: HHOOK) {
     }
 }
 
-// Main hook logic
+/// Hook logic. This function handles all key presses and so resposible for all accent logic.
 unsafe extern "system" fn callback(code: i32, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
     if code == HC_ACTION.try_into().unwrap() {
         let msg: &KBDLLHOOKSTRUCT = std::mem::transmute(l_param);

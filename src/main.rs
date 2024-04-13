@@ -1,4 +1,5 @@
-// main.rs
+//! # main
+//! `main.rs` is the place where all init and unload functions must be called. Also this module contains program message loop.
 #![cfg_attr(not(test), windows_subsystem = "windows")]
 
 mod config;

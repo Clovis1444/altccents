@@ -1,11 +1,17 @@
-// args.rs
-// To add new argument you need to create new item in SETTING_ARG_LIST: pass arg name to SettingArg and function pointer with argument logic
+//! # args
+//! `args.rs` contains all CLI arguments and how to handle them.
+//!
+//! # Add new argument
+//! To add new argument do the following steps:
+//! 1. Create new function that will handle the argument.
+//! 2. Add new item to `SETTING_ARG_LIST`. Item must contain **argument name** and **pointer to a handler function** from the first step.
 
 struct SettingArg<'a> {
     name: &'a str,
     function: fn(&str, &str),
 }
 
+/// Array of all args and pointers to their handler functions.
 const SETTING_ARG_LIST: [SettingArg; 14] = [
     SettingArg {
         name: "controlkey",
@@ -63,11 +69,10 @@ const SETTING_ARG_LIST: [SettingArg; 14] = [
         name: "round",
         function: arg_round,
     },
-    // TODO: Docs
-    // TODO: DPI scale
     // Insert new arg here
 ];
 
+/// This function will call arg handler function if the valid arg was provided.
 pub fn validate_arg(arg: &str) {
     for i in SETTING_ARG_LIST {
         let arg = arg.to_lowercase();
@@ -232,4 +237,4 @@ fn arg_round(arg: &str, name: &str) {
         };
     }
 }
-// Insert new argument validation function here
+// Insert new argument handler function here

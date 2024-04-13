@@ -1,4 +1,5 @@
-// config.rs
+//! # config
+//! `config.rs` contains all public constants, runtime changable settings and API to interact with them.
 
 mod args;
 
@@ -10,7 +11,7 @@ use windows::{
     },
 };
 
-// Settings that user can change
+/// Struct containing all the settings that can be changed at runtime.
 struct Settings {
     control_key: VIRTUAL_KEY,
     use_timer: bool,
@@ -49,6 +50,7 @@ impl Default for Settings {
     }
 }
 
+/// Object that stores all setting values.
 static mut SETTINGS: Settings = Settings {
     control_key: VK_NUMLOCK,
     use_timer: false,
@@ -92,6 +94,8 @@ pub const REMOVE_STARTUP_BUTTON_ID: u32 = 104;
 pub const SET_SETTINGS_BUTTON_ID: u32 = 105;
 pub const RESET_SETTINGS_BUTTON_ID: u32 = 106;
 
+/// Initialize `SETTINGS` depending on startup CLI arguments.
+/// > Note: this function must be called before `window::create_window()`.
 pub fn init_settings() {
     let mut args = std::env::args();
     // Skip binary path arg
@@ -109,6 +113,7 @@ pub fn init_settings() {
     }
 }
 
+/// Use this function to change `SETTINGS` at runtime.
 pub fn change_settings(options: Vec<&str>) {
     let mut opts = String::new();
     for i in options {
@@ -121,6 +126,7 @@ pub fn change_settings(options: Vec<&str>) {
     unsafe { super::session::PROGRAM_DATA.set_settings_options(Some(opts)) };
 }
 
+/// Reset `SETTINGS` to default values.
 pub fn reset_settings() {
     unsafe {
         SETTINGS = Settings::default();
@@ -145,6 +151,7 @@ pub fn reset_settings() {
 macro_rules! apply_attr {
     { #!$attr:tt $($it:item)* } => {
         $(
+            /// `SETTINGS` getter.
             #$attr
             $it
         )*

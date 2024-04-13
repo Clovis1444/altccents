@@ -1,4 +1,5 @@
-// resources.rs
+//! # resources
+//! `resources.rs` module is responsible for loading and unloading resources from `/resources`.
 
 use windows::{
     core::PCWSTR,
@@ -16,8 +17,10 @@ struct ResourceData {
     h_font: Option<HANDLE>,
 }
 
+/// Object that stores all loaded resource handles.
 static mut RESOURCE_DATA: ResourceData = ResourceData { h_font: None };
 
+/// Loads resources so we can us them in our program.
 pub fn init_resources() {
     unsafe {
         // Return if resources was already initialised
@@ -40,6 +43,7 @@ pub fn init_resources() {
     }
 }
 
+/// Unloads resources when we don't need them anymore.
 pub fn unload_resources() {
     unsafe {
         match RESOURCE_DATA.h_font {

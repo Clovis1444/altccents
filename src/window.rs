@@ -1,4 +1,5 @@
-// window.rs
+//! # window
+//! `window.rs` module contains program callback function(including tray icon callbacks) and window creation function.
 
 use mslnk::ShellLink;
 use std::path::Path;
@@ -17,6 +18,8 @@ use windows::{
 
 use super::{config::*, popup, session::PROGRAM_DATA, tray};
 
+/// Creates main window that will be used as **popup**. The return value of this function must be passed to `session::PROGRAM_DATA`.
+/// The window must be installed when the program starts.
 pub fn create_window() -> Result<HWND> {
     unsafe {
         let hwnd: HWND;
@@ -70,7 +73,7 @@ pub fn create_window() -> Result<HWND> {
     }
 }
 
-// Message handler. Main window logic
+/// Message handler. Main window logic. Also resposible for drawing popup and handling tray icon callbacks.
 extern "system" fn wndproc(
     window: HWND,
     message: u32,

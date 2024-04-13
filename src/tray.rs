@@ -1,4 +1,8 @@
-// tray.rs
+//! # tray
+//! `tray.rs` module contains everything related to the tray icon.
+//!
+//! # Add new context menu button
+//! To add a new button or change an existing one see `context_menu()`. The callback logic is defined in `window.rs`.
 
 use super::{
     config::*,
@@ -14,6 +18,7 @@ use windows::{
     },
 };
 
+/// Returns initial tray icon data and pass it to `session::PROGRAM_DATA`.
 pub fn init_tray_icon_data(program_data: &session::ProgramData) -> NOTIFYICONDATAW {
     unsafe {
         let mut tip_text: [u16; 128] = [0; 128];
@@ -51,6 +56,7 @@ pub fn init_tray_icon_data(program_data: &session::ProgramData) -> NOTIFYICONDAT
     }
 }
 
+/// Adds Altccents icon to tray.
 pub fn add_tray_icon(program_data: &session::ProgramData) {
     unsafe {
         match Shell_NotifyIconW(NIM_ADD, &program_data.get_tray_icon_data()).as_bool() {
@@ -60,6 +66,7 @@ pub fn add_tray_icon(program_data: &session::ProgramData) {
     }
 }
 
+/// Removes Altccents icon from tray.
 pub fn delete_tray_icon(program_data: &session::ProgramData) {
     unsafe {
         match Shell_NotifyIconW(NIM_DELETE, &program_data.get_tray_icon_data()).as_bool() {
@@ -69,6 +76,7 @@ pub fn delete_tray_icon(program_data: &session::ProgramData) {
     }
 }
 
+/// Updates tray icon picture depending on the current program state.
 pub fn update_tray_icon(program_data: &mut session::ProgramData) {
     unsafe {
         let new_icon: PCWSTR;
@@ -91,6 +99,8 @@ pub fn update_tray_icon(program_data: &mut session::ProgramData) {
     }
 }
 
+/// Render tray context menu.
+/// > Note: all context menu callback logic is defined in `window.rs`.
 pub fn context_menu(program_data: &session::ProgramData) {
     unsafe {
         let mut cursor_pos: POINT = POINT::default();

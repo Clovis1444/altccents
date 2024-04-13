@@ -1,4 +1,5 @@
-// session.rs
+//! # session
+//! `session.rs` contains information about current session and API to to interact with it.
 
 use super::config::*;
 
@@ -20,7 +21,7 @@ pub struct ProgramData {
     settings_options: Option<String>,
 }
 
-// hwnd, hhook, tray_icon_data should be set at program start up
+/// Object thats stores handles to main program entities, current program status and setting options.
 pub static mut PROGRAM_DATA: ProgramData = ProgramData {
     hwnd: None,
     hhook: None,

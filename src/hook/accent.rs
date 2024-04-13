@@ -1,4 +1,5 @@
-// accent.rs
+//! # accent
+//! `accent.rs` module manages accent input state.
 
 use super::super::{config::*, session::PROGRAM_DATA};
 use super::{
@@ -12,11 +13,13 @@ struct InputState {
     press_count: usize,
 }
 
+/// Object that contains information about current accent character and associated key press count.
 static mut INPUT_STATE: InputState = InputState {
     accent: None,
     press_count: 0,
 };
 
+/// `INPUT_STATE` getter.
 pub fn get_input_state() -> Option<(AccentKey, usize)> {
     unsafe {
         match INPUT_STATE.accent {
@@ -26,6 +29,7 @@ pub fn get_input_state() -> Option<(AccentKey, usize)> {
     }
 }
 
+/// Changes `INPUT_STATE` values depending on the provided Virtual key.
 pub fn update_input_state(current_key: &VIRTUAL_KEY) {
     unsafe {
         let current_accent = match data::AccentKey::from_vk(current_key) {
@@ -57,6 +61,7 @@ pub fn update_input_state(current_key: &VIRTUAL_KEY) {
     }
 }
 
+/// Check if capital depending on `Caps Lock` and `Shift` values.
 pub fn check_if_capital() -> bool {
     unsafe {
         let caps = GetKeyState(VK_CAPITAL.0.into()) & 0x0001 != 0;
@@ -74,6 +79,7 @@ pub fn reset_input_state() {
     }
 }
 
+/// Sends the character to an application.
 pub fn send_char(ch: char) {
     let pinputs = [
         INPUT {
@@ -107,7 +113,8 @@ pub fn send_char(ch: char) {
     }
 }
 
-// Will not send accent if there is no accent in INPUT_STATE, Will not kill timer if config::USE_TIMER is false
+/// Sends the character to an application and kills timer.
+/// > Note: This function will **not send** accent **if there is no accent** in INPUT_STATE; will **not kill timer** if `config::Settings::USE_TIMER` is false.
 pub fn send_accent_and_kill_timer() {
     unsafe {
         match get_input_state() {
@@ -125,6 +132,7 @@ pub fn send_accent_and_kill_timer() {
     }
 }
 
+/// UNUSED.
 // Does not needed when using WH_KEYBOARDHOOK_LL
 #[allow(dead_code)]
 pub fn send_vk_back() {
