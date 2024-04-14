@@ -2,8 +2,11 @@
 //! `config.rs` contains all public constants, runtime changable settings and API to interact with them.
 
 mod args;
+use std::path::Path;
+
 pub use args::get_args;
 
+use mslnk::ShellLink;
 use windows::{
     core::{w, PCWSTR},
     Win32::{
@@ -118,6 +121,22 @@ pub fn change_settings(options: Vec<&str>) {
         opts.push_str(i);
         opts.push(' ');
     }
+
+    // Add startup options to shortcut if it exists
+    unsafe {
+        let lnk = Path::new(&std::env::var("APPDATA").unwrap())
+            .join("Microsoft/Windows/Start Menu/Programs/Startup")
+            .join(PROGRAM_NAME.to_string().unwrap() + ".lnk");
+
+        if lnk.exists() {
+            let target = std::env::current_exe().unwrap();
+
+            let mut sl = ShellLink::new(target).unwrap();
+            sl.set_arguments(Some(get_args()));
+            sl.create_lnk(lnk).unwrap();
+        }
+    }
+    // TODO: create pub const for link path?
 }
 
 /// Reset `SETTINGS` to default values.
@@ -136,6 +155,19 @@ pub fn reset_settings() {
             POPUP_WINDOW_TRANSPARENCY(),
             LWA_ALPHA | LWA_COLORKEY,
         );
+
+        // Add startup options to shortcut if it exists
+        let lnk = Path::new(&std::env::var("APPDATA").unwrap())
+            .join("Microsoft/Windows/Start Menu/Programs/Startup")
+            .join(PROGRAM_NAME.to_string().unwrap() + ".lnk");
+
+        if lnk.exists() {
+            let target = std::env::current_exe().unwrap();
+
+            let mut sl = ShellLink::new(target).unwrap();
+            sl.set_arguments(None);
+            sl.create_lnk(lnk).unwrap();
+        }
     }
 }
 

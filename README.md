@@ -52,7 +52,6 @@ You can also manage altccents by interacting with the **tray icon**.
 
 1. Copy preferred setting options to your clipboard. Example: copy **_nosound circle_** to disable application sounds and change selection figure to circle.
 2. Open **_Altccent context menu_** by right-clicking on the application tray icon and select **Set settings from clipboard** option.
-3. To apply your settings to startup - **readd Altccents** to startup using **_Remove from startup_** and **_Add to startup_** context menu options.
 
 You can also pass any combination of setting options to [**Altccents shortcut**](#installation).
 
