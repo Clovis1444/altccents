@@ -126,7 +126,7 @@ extern "system" fn wndproc(
                         .join(PROGRAM_NAME.to_string().unwrap() + ".lnk");
 
                     let mut sl = ShellLink::new(target).unwrap();
-                    sl.set_arguments(PROGRAM_DATA.get_settings_options());
+                    sl.set_arguments(Some(super::config::get_args()));
                     sl.create_lnk(lnk).unwrap();
 
                     LRESULT(0)

@@ -18,7 +18,6 @@ pub struct ProgramData {
     hhook: Option<HHOOK>,
     tray_icon_data: Option<NOTIFYICONDATAW>,
     status: bool,
-    settings_options: Option<String>,
 }
 
 /// Object thats stores handles to main program entities, current program status and setting options.
@@ -27,7 +26,6 @@ pub static mut PROGRAM_DATA: ProgramData = ProgramData {
     hhook: None,
     tray_icon_data: None,
     status: false,
-    settings_options: None,
 };
 
 impl ProgramData {
@@ -83,15 +81,5 @@ impl ProgramData {
     }
     pub fn get_status(&self) -> bool {
         self.status
-    }
-
-    pub fn get_settings_options(&self) -> Option<String> {
-        self.settings_options.clone()
-    }
-    pub fn set_settings_options(&mut self, options: Option<String>) {
-        match options {
-            Some(x) if x.is_empty() => self.settings_options = None,
-            _ => self.settings_options = options,
-        }
     }
 }

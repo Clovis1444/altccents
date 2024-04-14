@@ -2,6 +2,7 @@
 //! `config.rs` contains all public constants, runtime changable settings and API to interact with them.
 
 mod args;
+pub use args::get_args;
 
 use windows::{
     core::{w, PCWSTR},
@@ -107,10 +108,6 @@ pub fn init_settings() {
         options.push_str(&i);
         options.push(' ');
     }
-
-    unsafe {
-        super::session::PROGRAM_DATA.set_settings_options(Some(options));
-    }
 }
 
 /// Use this function to change `SETTINGS` at runtime.
@@ -121,18 +118,12 @@ pub fn change_settings(options: Vec<&str>) {
         opts.push_str(i);
         opts.push(' ');
     }
-
-    // Update session options
-    unsafe { super::session::PROGRAM_DATA.set_settings_options(Some(opts)) };
 }
 
 /// Reset `SETTINGS` to default values.
 pub fn reset_settings() {
     unsafe {
         SETTINGS = Settings::default();
-
-        // Update session options
-        super::session::PROGRAM_DATA.set_settings_options(None);
 
         // Update transparancy
         use super::session::PROGRAM_DATA;
