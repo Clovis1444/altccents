@@ -99,8 +99,10 @@ You can also pass any combination of setting options to [**Altccents shortcut**]
 -   `circleSelect` - change popup selection figure to circle instead of rounded rectangle.
 -   `rectSelect` - change popup selection figure to rounded rectangle.
 
-> **Note**: letter case does not matter in option names.
+> [!NOTE]
+> Letter case does not matter in option names.
 
+> [!TIP]
 > These parameters are equivalent to the default settings:
 >
 > ```
