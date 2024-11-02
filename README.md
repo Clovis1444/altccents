@@ -67,7 +67,7 @@ You can also pass any combination of setting options to [**Altccents shortcut**]
 
     Example: **_controlKey144_**.
 
--   `timer<ms>` - causes a letter to be printed if there is no input from the user within a **_ms_** milliseconds. **_ms_** is optional, if **_ms_** is not timer will be set to 1 second by default, otherwise timer will be set on **_ms_** milliseconds.
+-   `timer<ms>` - causes a letter to be printed if there is no input from the user within a **_ms_** milliseconds. **_ms_** is optional, if **_ms_** is not specified timer will be set to 1 second by default, otherwise timer will be set on **_ms_** milliseconds.
 
     Example: **_timer3000_**.
 
